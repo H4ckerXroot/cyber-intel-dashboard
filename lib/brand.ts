@@ -1,0 +1,15 @@
+export const BRAND = {
+  name: "KANVI CTI PORTAL",
+  shortName: "KANVI",
+  tagline: "THREAT INTEL",
+  subtitle: "Personal Cyber Threat Intelligence Workspace",
+  greeting: "Welcome back, Kanvi",
+  analystName: "Kanvi",
+  analystRole: "Threat Intelligence Analyst",
+  analystTeam: "Personal CTI Operations",
+  analystClearance: "SOC Level III",
+  analystTimezone: "UTC+0",
+  footer: "Powered by Cyber Threat Intelligence Automation",
+  footerPersonal: "Built personally for Kanvi ❤️",
+  feedCount: 19,
+} as const;
