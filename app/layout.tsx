@@ -17,7 +17,9 @@ export const metadata: Metadata = {
   description:
     "CTI Dashboard — Personal cyber threat intelligence workspace with live RSS feeds, CVE alerts, and SOC-style monitoring.",
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
   },
 };
 
