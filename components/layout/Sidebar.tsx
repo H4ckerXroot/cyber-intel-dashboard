@@ -1,5 +1,6 @@
 "use client";
 
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { BRAND } from "@/lib/brand";
 import { NAV_ITEMS } from "@/lib/nav";
 import { cn } from "@/lib/utils";
@@ -36,13 +37,13 @@ export function Sidebar({
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="border-b border-slate-800/80 px-4 py-5">
+        <div className="border-b border-slate-800/80 px-4 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-sm font-semibold text-white">
-              K
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-100">{BRAND.shortName}</p>
+            <BrandLogo size="sm" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-slate-100">
+                {BRAND.name}
+              </p>
               <p className="text-[10px] font-medium uppercase tracking-widest text-slate-500">
                 {BRAND.tagline}
               </p>
@@ -70,7 +71,7 @@ export function Sidebar({
 
         <div className="border-t border-slate-800/80 p-4">
           <p className="text-[10px] leading-relaxed text-slate-600">
-            {BRAND.feedCount} intelligence sources
+            {BRAND.feedCount} sources · Last {BRAND.maxArticleAgeHours}h
           </p>
         </div>
       </aside>

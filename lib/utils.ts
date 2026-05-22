@@ -2,19 +2,29 @@ export function formatRelativeTime(isoDate: string): string {
   const date = new Date(isoDate);
   const now = Date.now();
   const diffMs = now - date.getTime();
+
+  if (Number.isNaN(diffMs)) return "Unknown date";
+
+  const diffSecs = Math.floor(diffMs / 1000);
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffSecs < 45) return "Just now";
+  if (diffMins < 1) return "Less than a minute ago";
+  if (diffMins === 1) return "1 minute ago";
+  if (diffMins < 60) return `${diffMins} minutes ago`;
+  if (diffHours === 1) return "1 hour ago";
+  if (diffHours < 24) return `${diffHours} hours ago`;
+
+  const diffDays = Math.floor(diffMs / 86400000);
+  if (diffDays === 1) return "1 day ago";
+  if (diffDays < 7) return `${diffDays} days ago`;
 
   return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
-    year: date.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
+    year:
+      date.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
   });
 }
 

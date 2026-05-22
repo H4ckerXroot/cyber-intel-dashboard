@@ -35,10 +35,12 @@ export function CyberDashboard() {
     allArticles,
     articlesByCategory,
     loading,
+    refreshing,
     error,
     feedErrors,
     fetchedAt,
     feedStats,
+    filteredOutCount,
     search,
     setSearch,
     categoryFilter,
@@ -110,6 +112,7 @@ export function CyberDashboard() {
           onSearchChange={setSearch}
           onRefresh={refresh}
           loading={loading}
+          refreshing={refreshing}
           articleCount={articles.length}
           fetchedAt={fetchedAt}
           feedSuccess={feedStats.success}
@@ -142,6 +145,14 @@ export function CyberDashboard() {
               </div>
             )}
 
+            {!loading && filteredOutCount > 0 && (
+              <p className="text-xs text-slate-600">
+                {filteredOutCount.toLocaleString()} older article
+                {filteredOutCount === 1 ? "" : "s"} hidden (outside last{" "}
+                {BRAND.maxArticleAgeHours} hours).
+              </p>
+            )}
+
             {/* Overview: compact ops header */}
             <section
               id="overview"
@@ -151,6 +162,7 @@ export function CyberDashboard() {
                 <WelcomeSection
                   fetchedAt={fetchedAt}
                   loading={loading}
+                  refreshing={refreshing}
                   articleCount={allArticles.length}
                 />
               </div>

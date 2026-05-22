@@ -32,6 +32,8 @@ export interface FeedsApiResponse {
   totalCount: number;
   feedSuccessCount?: number;
   feedTotalCount?: number;
+  maxAgeHours?: number;
+  filteredOutCount?: number;
   errors?: { feed: string; message: string }[];
 }
 

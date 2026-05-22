@@ -8,14 +8,22 @@ import { formatRelativeTime } from "@/lib/utils";
 interface WelcomeSectionProps {
   fetchedAt?: string;
   loading?: boolean;
+  refreshing?: boolean;
   articleCount: number;
 }
 
 export function WelcomeSection({
   fetchedAt,
   loading,
+  refreshing,
   articleCount,
 }: WelcomeSectionProps) {
+  const syncText = refreshing
+    ? "Syncing feeds now…"
+    : loading
+      ? "Loading feeds…"
+      : `Last sync · ${fetchedAt ? formatRelativeTime(fetchedAt) : "—"}`;
+
   return (
     <div className="relative h-full overflow-hidden rounded-lg border border-slate-800/80 bg-slate-900/60">
       <div className="hero-glow" />
@@ -34,10 +42,9 @@ export function WelcomeSection({
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <LiveBadge />
-            <span className="text-xs text-slate-500">
-              {loading
-                ? "Syncing feeds…"
-                : `Last sync · ${fetchedAt ? formatRelativeTime(fetchedAt) : "—"}`}
+            <span className="text-xs text-slate-500">{syncText}</span>
+            <span className="text-xs text-slate-600">
+              · Showing last {BRAND.maxArticleAgeHours}h only
             </span>
           </div>
 
@@ -60,7 +67,7 @@ export function WelcomeSection({
             <span className="font-medium text-slate-300">
               {loading ? "—" : articleCount.toLocaleString()}
             </span>{" "}
-            signals · {BRAND.feedCount} sources
+            recent signals · {BRAND.feedCount} sources
           </p>
         </div>
       </div>

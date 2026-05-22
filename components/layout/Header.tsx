@@ -11,6 +11,7 @@ interface HeaderProps {
   onSearchChange: (value: string) => void;
   onRefresh: () => void;
   loading: boolean;
+  refreshing: boolean;
   articleCount: number;
   fetchedAt?: string;
   feedSuccess?: number;
@@ -23,12 +24,21 @@ export function Header({
   onSearchChange,
   onRefresh,
   loading,
+  refreshing,
   articleCount,
   fetchedAt,
   feedSuccess,
   feedTotal,
   onMenuToggle,
 }: HeaderProps) {
+  const syncLabel = refreshing
+    ? "Syncing now…"
+    : loading
+      ? "Loading…"
+      : fetchedAt
+        ? `Last sync · ${formatRelativeTime(fetchedAt)}`
+        : "Last sync · —";
+
   return (
     <header className="glass-panel sticky top-0 z-30 border-b border-slate-800/80 px-4 py-3 sm:px-6">
       <div className="mx-auto flex max-w-7xl flex-col gap-3">
@@ -49,15 +59,16 @@ export function Header({
                 {BRAND.name}
               </p>
               <p className="hidden truncate text-xs text-slate-500 sm:block">
-                {loading
-                  ? "Syncing…"
-                  : `${articleCount.toLocaleString()} signals · ${fetchedAt ? formatRelativeTime(fetchedAt) : "—"}${feedSuccess != null && feedTotal ? ` · ${feedSuccess}/${feedTotal} feeds` : ""}`}
+                {syncLabel}
+                {feedSuccess != null && feedTotal && !loading && !refreshing
+                  ? ` · ${feedSuccess}/${feedTotal} feeds · ${articleCount.toLocaleString()} signals`
+                  : ""}
               </p>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <LiveBadge size="sm" className="hidden sm:inline-flex" />
-            <RefreshButton onClick={onRefresh} loading={loading} />
+            <RefreshButton onClick={onRefresh} loading={refreshing || loading} />
           </div>
         </div>
         <SearchBar value={search} onChange={onSearchChange} />

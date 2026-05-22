@@ -1,17 +1,20 @@
 import Parser from "rss-parser";
 import { categorizeArticle } from "./categorize";
+import { filterFreshArticles } from "./freshness";
 import { RSS_FEEDS } from "./feeds";
 import { classifySeverity } from "./severity";
 import type { FeedSource, ThreatArticle } from "./types";
 
 const MAX_RETRIES = 2;
-const RETRY_DELAY_MS = 1200;
+const RETRY_DELAY_MS = 1000;
+const FEED_TIMEOUT_MS = 14_000;
+const FEED_CONCURRENCY = 4;
 
 const parser = new Parser({
-  timeout: 28000,
+  timeout: FEED_TIMEOUT_MS,
   headers: {
     "User-Agent":
-      "Mozilla/5.0 (compatible; KanviCTIPortal/2.0; ThreatIntelAggregator)",
+      "Mozilla/5.0 (compatible; CTIDashboard/1.0; +https://github.com/cti-dashboard)",
     Accept:
       "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
   },
@@ -25,6 +28,15 @@ const parser = new Parser({
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    delay(ms).then(() => {
+      throw new Error(`Feed request timed out after ${ms}ms`);
+    }),
+  ]);
 }
 
 async function withRetry<T>(
@@ -61,32 +73,46 @@ function stripHtml(html: string): string {
 }
 
 function extractImage(item: Parser.Item): string | undefined {
-  if (item.enclosure?.url) {
-    const type = item.enclosure.type ?? "";
-    if (!type || type.startsWith("image")) return item.enclosure.url;
+  try {
+    if (item.enclosure?.url) {
+      const type = item.enclosure.type ?? "";
+      if (!type || type.startsWith("image")) return item.enclosure.url;
+    }
+
+    const mediaContent = (item as Record<string, unknown>)["mediaContent"] as
+      | { $?: { url?: string } }[]
+      | undefined;
+    if (mediaContent?.[0]?.$?.url) return mediaContent[0].$.url;
+
+    const mediaThumbnail = (item as Record<string, unknown>)[
+      "mediaThumbnail"
+    ] as { $?: { url?: string } }[] | undefined;
+    if (mediaThumbnail?.[0]?.$?.url) return mediaThumbnail[0].$.url;
+
+    const itemExt = item as Parser.Item & { "content:encoded"?: string };
+    const content =
+      item.content || itemExt["content:encoded"] || item.summary || "";
+    const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (imgMatch?.[1]) return imgMatch[1];
+  } catch {
+    /* ignore malformed media fields */
   }
-
-  const mediaContent = (item as Record<string, unknown>)["mediaContent"] as
-    | { $?: { url?: string } }[]
-    | undefined;
-  if (mediaContent?.[0]?.$?.url) return mediaContent[0].$.url;
-
-  const mediaThumbnail = (item as Record<string, unknown>)["mediaThumbnail"] as
-    | { $?: { url?: string } }[]
-    | undefined;
-  if (mediaThumbnail?.[0]?.$?.url) return mediaThumbnail[0].$.url;
-
-  const itemExt = item as Parser.Item & { "content:encoded"?: string };
-  const content =
-    item.content || itemExt["content:encoded"] || item.summary || "";
-  const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-  if (imgMatch?.[1]) return imgMatch[1];
 
   return undefined;
 }
 
+function normalizeLink(link: string): string {
+  try {
+    const u = new URL(link);
+    u.hash = "";
+    return u.href.replace(/\/$/, "");
+  } catch {
+    return link.trim();
+  }
+}
+
 function toArticleId(link: string, title: string): string {
-  const base = `${link}-${title}`;
+  const base = `${normalizeLink(link)}-${title}`;
   let hash = 0;
   for (let i = 0; i < base.length; i++) {
     hash = (hash << 5) - hash + base.charCodeAt(i);
@@ -95,57 +121,67 @@ function toArticleId(link: string, title: string): string {
   return `article-${Math.abs(hash).toString(36)}`;
 }
 
-function parseDate(item: Parser.Item): string {
+function parsePublishedDate(item: Parser.Item): string | null {
   const raw = item.isoDate || item.pubDate;
-  if (raw) {
-    const d = new Date(raw);
-    if (!Number.isNaN(d.getTime())) return d.toISOString();
-  }
-  return new Date().toISOString();
+  if (!raw) return null;
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
 }
 
 function normalizeItem(
   item: Parser.Item,
   feed: FeedSource
 ): ThreatArticle | null {
-  const title = item.title?.trim();
-  const link = item.link?.trim() || item.guid?.trim();
-  if (!title || !link) return null;
+  try {
+    const title = item.title?.trim();
+    const link = item.link?.trim() || item.guid?.trim();
+    if (!title || !link) return null;
 
-  const itemExt = item as Parser.Item & { "content:encoded"?: string };
-  const rawSummary =
-    item.contentSnippet ||
-    stripHtml(
-      item.content || itemExt["content:encoded"] || item.summary || ""
-    );
-  const summary = rawSummary.slice(0, 400);
-  const publishedAt = parseDate(item);
-  const category = categorizeArticle(title, summary, feed.name);
-  const severity = classifySeverity(title, summary);
-  const image = extractImage(item);
+    const publishedAt = parsePublishedDate(item);
+    if (!publishedAt) return null;
 
-  return {
-    id: toArticleId(link, title),
-    title,
-    link,
-    summary,
-    publishedAt,
-    source: feed.name,
-    feedUrl: feed.url,
-    category,
-    severity,
-    ...(image ? { image } : {}),
-  };
+    const itemExt = item as Parser.Item & { "content:encoded"?: string };
+    const rawSummary =
+      item.contentSnippet ||
+      stripHtml(
+        item.content || itemExt["content:encoded"] || item.summary || ""
+      );
+    const summary = rawSummary.slice(0, 400);
+    const category = categorizeArticle(title, summary, feed.name);
+    const severity = classifySeverity(title, summary);
+    const image = extractImage(item);
+
+    return {
+      id: toArticleId(link, title),
+      title,
+      link,
+      summary,
+      publishedAt,
+      source: feed.name,
+      feedUrl: feed.url,
+      category,
+      severity,
+      ...(image ? { image } : {}),
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchFeedArticles(
   feed: FeedSource
 ): Promise<{ articles: ThreatArticle[]; error?: string }> {
   try {
-    const parsed = await withRetry(() => parser.parseURL(feed.url));
-    const articles = (parsed.items || [])
-      .map((item) => normalizeItem(item, feed))
-      .filter((a): a is ThreatArticle => a !== null);
+    const parsed = await withRetry(() =>
+      withTimeout(parser.parseURL(feed.url), FEED_TIMEOUT_MS)
+    );
+
+    const articles: ThreatArticle[] = [];
+    for (const item of parsed.items ?? []) {
+      const article = normalizeItem(item, feed);
+      if (article) articles.push(article);
+    }
 
     return { articles };
   } catch (err) {
@@ -154,16 +190,61 @@ export async function fetchFeedArticles(
   }
 }
 
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let index = 0;
+
+  async function worker() {
+    while (index < items.length) {
+      const i = index++;
+      results[i] = await fn(items[i]);
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, () => worker())
+  );
+  return results;
+}
+
+function dedupeArticles(articles: ThreatArticle[]): ThreatArticle[] {
+  const seenIds = new Set<string>();
+  const seenLinks = new Set<string>();
+  const unique: ThreatArticle[] = [];
+
+  for (const article of articles) {
+    const linkKey = normalizeLink(article.link);
+    if (seenIds.has(article.id) || seenLinks.has(linkKey)) continue;
+    seenIds.add(article.id);
+    seenLinks.add(linkKey);
+    unique.push(article);
+  }
+
+  return unique;
+}
+
+function sortByLatest(articles: ThreatArticle[]): ThreatArticle[] {
+  return [...articles].sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
+
 export async function fetchAllFeeds(): Promise<{
   articles: ThreatArticle[];
   errors: { feed: string; message: string }[];
   feedSuccessCount: number;
   feedTotalCount: number;
+  filteredOutCount: number;
 }> {
-  const results = await Promise.all(
-    RSS_FEEDS.map((feed) =>
-      fetchFeedArticles(feed).then((result) => ({ feed, ...result }))
-    )
+  const results = await mapWithConcurrency(
+    RSS_FEEDS,
+    FEED_CONCURRENCY,
+    (feed) => fetchFeedArticles(feed).then((result) => ({ feed, ...result }))
   );
 
   const errors: { feed: string; message: string }[] = [];
@@ -175,26 +256,20 @@ export async function fetchAllFeeds(): Promise<{
       errors.push({ feed: result.feed.name, message: result.error });
     } else {
       feedSuccessCount++;
+      allArticles.push(...result.articles);
     }
-    allArticles.push(...result.articles);
   }
 
-  const seen = new Set<string>();
-  const unique = allArticles.filter((article) => {
-    if (seen.has(article.id)) return false;
-    seen.add(article.id);
-    return true;
-  });
-
-  unique.sort(
-    (a, b) =>
-      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
+  const deduped = dedupeArticles(allArticles);
+  const fresh = filterFreshArticles(deduped);
+  const filteredOutCount = deduped.length - fresh.length;
+  const sorted = sortByLatest(fresh);
 
   return {
-    articles: unique,
+    articles: sorted,
     errors,
-    feedSuccessCount: RSS_FEEDS.length - errors.length,
+    feedSuccessCount,
     feedTotalCount: RSS_FEEDS.length,
+    filteredOutCount,
   };
 }

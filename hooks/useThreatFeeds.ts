@@ -7,27 +7,44 @@ import type {
   ThreatCategory,
   ThreatSeverity,
 } from "@/lib/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+function sortArticles(articles: ThreatArticle[]): ThreatArticle[] {
+  return [...articles].sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
 
 export function useThreatFeeds() {
   const [articles, setArticles] = useState<ThreatArticle[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [feedErrors, setFeedErrors] = useState<FeedsApiResponse["errors"]>();
   const [fetchedAt, setFetchedAt] = useState<string>();
   const [feedStats, setFeedStats] = useState({ success: 0, total: 0 });
+  const [filteredOutCount, setFilteredOutCount] = useState(0);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<FilterValue>(ALL_CATEGORY_ID);
   const [severityFilter, setSeverityFilter] = useState<ThreatSeverity | "all">(
     "all"
   );
+  const initialLoad = useRef(true);
 
-  const fetchFeeds = useCallback(async () => {
-    setLoading(true);
+  const fetchFeeds = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
 
     try {
-      const res = await fetch("/api/feeds", { cache: "no-store" });
+      const res = await fetch(`/api/feeds?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
       const data: FeedsApiResponse = await res.json();
 
       if (!res.ok && data.articles.length === 0) {
@@ -37,9 +54,10 @@ export function useThreatFeeds() {
         );
       }
 
-      setArticles(data.articles);
+      setArticles(sortArticles(data.articles));
       setFetchedAt(data.fetchedAt);
       setFeedErrors(data.errors);
+      setFilteredOutCount(data.filteredOutCount ?? 0);
       setFeedStats({
         success: data.feedSuccessCount ?? 0,
         total: data.feedTotalCount ?? 0,
@@ -49,17 +67,20 @@ export function useThreatFeeds() {
       setError(message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
+      initialLoad.current = false;
     }
   }, []);
 
+  const refresh = useCallback(() => fetchFeeds(true), [fetchFeeds]);
+
   useEffect(() => {
-    fetchFeeds();
+    fetchFeeds(false);
   }, [fetchFeeds]);
 
   const filteredArticles = useMemo(() => {
     const query = search.trim().toLowerCase();
-
-    return articles.filter((article) => {
+    const filtered = articles.filter((article) => {
       const matchesCategory =
         categoryFilter === ALL_CATEGORY_ID ||
         article.category === categoryFilter;
@@ -75,6 +96,8 @@ export function useThreatFeeds() {
         `${article.title} ${article.summary} ${article.source} ${article.severity}`.toLowerCase();
       return haystack.includes(query);
     });
+
+    return sortArticles(filtered);
   }, [articles, search, categoryFilter, severityFilter]);
 
   const articlesByCategory = useMemo(() => {
@@ -115,15 +138,20 @@ export function useThreatFeeds() {
     return counts;
   }, [articles]);
 
+  const isBusy = loading || refreshing;
+
   return {
     articles: filteredArticles,
     allArticles: articles,
     articlesByCategory,
     loading,
+    refreshing,
+    isBusy,
     error,
     feedErrors,
     fetchedAt,
     feedStats,
+    filteredOutCount,
     search,
     setSearch,
     categoryFilter,
@@ -132,6 +160,6 @@ export function useThreatFeeds() {
     setSeverityFilter,
     categoryCounts,
     severityCounts,
-    refresh: fetchFeeds,
+    refresh,
   };
 }

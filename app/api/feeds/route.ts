@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server";
+import { MAX_ARTICLE_AGE_HOURS } from "@/lib/freshness";
 import { RSS_FEEDS } from "@/lib/feeds";
 import { fetchAllFeeds } from "@/lib/rss";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const maxDuration = 60;
 
 export async function GET() {
   try {
-    const { articles, errors, feedSuccessCount, feedTotalCount } =
-      await fetchAllFeeds();
+    const {
+      articles,
+      errors,
+      feedSuccessCount,
+      feedTotalCount,
+      filteredOutCount,
+    } = await fetchAllFeeds();
 
     return NextResponse.json({
       articles,
@@ -16,6 +23,8 @@ export async function GET() {
       totalCount: articles.length,
       feedSuccessCount,
       feedTotalCount,
+      maxAgeHours: MAX_ARTICLE_AGE_HOURS,
+      filteredOutCount,
       ...(errors.length > 0 ? { errors } : {}),
     });
   } catch (err) {
@@ -31,6 +40,8 @@ export async function GET() {
         totalCount: 0,
         feedSuccessCount: 0,
         feedTotalCount: RSS_FEEDS.length,
+        maxAgeHours: MAX_ARTICLE_AGE_HOURS,
+        filteredOutCount: 0,
         errors: [{ feed: "all", message }],
       },
       { status: 500 }

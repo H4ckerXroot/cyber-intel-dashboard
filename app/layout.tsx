@@ -13,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KANVI CTI PORTAL | Personal Cyber Threat Intelligence",
+  title: "CTI Dashboard | Cyber Threat Intelligence",
   description:
-    "KANVI CTI PORTAL — Personal Cyber Threat Intelligence Workspace. Premium SOC dashboard for Kanvi.",
+    "CTI Dashboard — Personal cyber threat intelligence workspace with live RSS feeds, CVE alerts, and SOC-style monitoring.",
   icons: {
-    icon: "/icon.svg",
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
   },
 };
 

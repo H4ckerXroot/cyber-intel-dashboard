@@ -16,11 +16,12 @@ export function RefreshButton({ onClick, loading, className }: RefreshButtonProp
       disabled={loading}
       className={cn(
         "rounded-lg border border-slate-700/80 bg-slate-800/50 px-3 py-2 text-xs font-medium text-slate-300 transition-colors",
-        "hover:border-slate-600 hover:bg-slate-800 hover:text-slate-100",
-        "disabled:cursor-not-allowed disabled:opacity-50",
+        "hover:border-blue-500/40 hover:bg-slate-800 hover:text-slate-100",
+        "disabled:cursor-wait disabled:opacity-70",
         className
       )}
       aria-label="Refresh feeds"
+      aria-busy={loading}
     >
       <span className="flex items-center gap-1.5">
         <svg
@@ -37,7 +38,7 @@ export function RefreshButton({ onClick, loading, className }: RefreshButtonProp
             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
           />
         </svg>
-        {loading ? "Syncing" : "Refresh"}
+        {loading ? "Syncing…" : "Refresh"}
       </span>
     </button>
   );

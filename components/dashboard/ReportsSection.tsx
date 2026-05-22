@@ -33,7 +33,7 @@ export function ReportsSection({
     {
       title: "Feed Coverage",
       desc: "Source availability this session",
-      metric: 19,
+      metric: 12,
       label: "feeds",
     },
   ];
