@@ -120,7 +120,7 @@ export function CyberDashboard() {
           onMenuToggle={() => setSidebarOpen(true)}
         />
 
-        <main className="min-h-0 flex-1 overflow-y-auto px-3 py-3 sm:px-4 lg:px-5 lg:py-3.5">
+        <main className="min-h-0 flex-1 overflow-y-auto px-3 py-3 sm:px-4 lg:px-5">
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-3">
             {error && (
               <div
@@ -153,10 +153,10 @@ export function CyberDashboard() {
               </p>
             )}
 
-            {/* Overview: compact ops header */}
+            {/* TOP: Hero + right-side ops panels */}
             <section
               id="overview"
-              className="scroll-mt-16 grid gap-2 lg:grid-cols-12 lg:items-start"
+              className="scroll-mt-16 grid gap-2 lg:grid-cols-12 lg:items-stretch"
             >
               <div className="lg:col-span-8">
                 <WelcomeSection
@@ -170,18 +170,30 @@ export function CyberDashboard() {
                 <ThreatLevelWidget severityCounts={severityCounts} />
                 <AnalystProfile />
               </div>
+
+              {/* MIDDLE: Metric cards row */}
               <div className="lg:col-span-12">
                 <ThreatStats
                   total={allArticles.length}
                   severityCounts={severityCounts}
                   feedSuccess={feedStats.success}
                   feedTotal={feedStats.total}
+                  watchlistCount={watchlistIds.length}
+                  savedCount={savedIds.length}
                   loading={loading}
                 />
               </div>
             </section>
 
-            {/* Filters toolbar */}
+            {/* BOTTOM (ops): Analytics + global map */}
+            {showPriorityLayout && (
+              <IntelWidgets
+                severityCounts={severityCounts}
+                totalArticles={allArticles.length}
+              />
+            )}
+
+            {/* Filters */}
             <div className="soc-card flex flex-col gap-2 px-3 py-2.5">
               <CategoryFilter
                 active={categoryFilter}
@@ -196,14 +208,14 @@ export function CyberDashboard() {
             </div>
 
             {hasActiveFilter ? (
-              <section className="flex flex-col gap-3">
-                <h2 className="text-sm font-semibold text-slate-300">
+              <section className="flex flex-col gap-2">
+                <h2 className="section-heading">
                   Search Results ({articles.length})
                 </h2>
                 {loading ? (
                   <LoadingSkeleton count={6} />
                 ) : articles.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-slate-800 py-10 text-center">
+                  <div className="rounded-lg border border-dashed border-slate-800 py-8 text-center">
                     <p className="text-sm text-slate-500">
                       No articles match your search or filters.
                     </p>
@@ -225,7 +237,7 @@ export function CyberDashboard() {
                 )}
               </section>
             ) : showPriorityLayout ? (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 border-t border-slate-800/40 pt-3">
                 <PriorityIntel
                   latestNews={articlesByCategory["latest-threat-news"]}
                   cveAlerts={articlesByCategory["cve-alerts"]}
@@ -238,12 +250,7 @@ export function CyberDashboard() {
                   onToggleWatchlist={toggleWatchlist}
                 />
 
-                <IntelWidgets
-                  severityCounts={severityCounts}
-                  totalArticles={allArticles.length}
-                />
-
-                <div className="flex flex-col gap-3 border-t border-slate-800/50 pt-3">
+                <div className="flex flex-col gap-3">
                   {SECONDARY_SECTIONS.map((category) => (
                     <ThreatSection
                       key={category}

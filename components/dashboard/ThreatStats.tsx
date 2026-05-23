@@ -9,6 +9,8 @@ interface ThreatStatsProps {
   severityCounts: Record<ThreatSeverity, number>;
   feedSuccess: number;
   feedTotal: number;
+  watchlistCount?: number;
+  savedCount?: number;
   loading?: boolean;
   className?: string;
 }
@@ -18,6 +20,8 @@ export function ThreatStats({
   severityCounts,
   feedSuccess,
   feedTotal,
+  watchlistCount = 0,
+  savedCount = 0,
   loading,
   className,
 }: ThreatStatsProps) {
@@ -26,51 +30,71 @@ export function ThreatStats({
       label: "Total Signals",
       value: total,
       color: "text-slate-100",
-      sub: "last 48h",
+      accent: "from-slate-700/20 to-transparent",
     },
     {
       label: "Critical",
       value: severityCounts.critical,
       color: "text-red-400",
-      sub: "severity",
+      accent: "from-red-950/30 to-transparent",
     },
     {
       label: "High",
       value: severityCounts.high,
       color: "text-orange-400",
-      sub: "severity",
+      accent: "from-orange-950/25 to-transparent",
     },
     {
       label: "Feeds Online",
       value: feedSuccess,
       suffix: `/${feedTotal}`,
       color: "text-blue-400",
-      sub: "sources",
+      accent: "from-blue-950/25 to-transparent",
+    },
+    {
+      label: "Watchlist",
+      value: watchlistCount,
+      color: "text-violet-400",
+      accent: "from-violet-950/25 to-transparent",
+    },
+    {
+      label: "Saved",
+      value: savedCount,
+      color: "text-slate-300",
+      accent: "from-slate-800/30 to-transparent",
     },
   ];
 
   return (
-    <div className={cn("grid grid-cols-2 gap-2 lg:grid-cols-4", className)}>
+    <div
+      className={cn(
+        "grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6",
+        className
+      )}
+    >
       {cards.map((card) => (
         <div
           key={card.label}
-          className="soc-card flex min-h-[4.25rem] flex-col justify-center px-3 py-2"
+          className={cn(
+            "soc-card relative overflow-hidden px-2.5 py-2",
+            "bg-gradient-to-br",
+            card.accent
+          )}
         >
-          <p className="text-[9px] font-medium uppercase tracking-[0.08em] text-slate-500">
+          <p className="truncate text-[9px] font-medium uppercase tracking-[0.06em] text-slate-500">
             {card.label}
           </p>
           <p
             className={cn(
-              "mt-0.5 text-base font-semibold tabular-nums leading-none sm:text-lg",
+              "mt-0.5 text-base font-semibold tabular-nums leading-none",
               card.color
             )}
           >
             <AnimatedCounter value={card.value} enabled={!loading} />
             {card.suffix && (
-              <span className="text-xs font-normal text-slate-500">{card.suffix}</span>
+              <span className="text-[10px] font-normal text-slate-500">{card.suffix}</span>
             )}
           </p>
-          <p className="mt-1 text-[9px] text-slate-600">{card.sub}</p>
         </div>
       ))}
     </div>

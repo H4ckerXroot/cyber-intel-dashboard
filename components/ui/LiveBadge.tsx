@@ -15,8 +15,8 @@ export function LiveBadge({ className, size = "md" }: LiveBadgeProps) {
       )}
     >
       <span className="relative flex h-1.5 w-1.5">
-        <span className="absolute h-full w-full rounded-full bg-emerald-500/40 animate-subtle-pulse" />
-        <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        <span className="absolute h-full w-full rounded-full bg-blue-500/40 animate-subtle-pulse" />
+        <span className="relative h-1.5 w-1.5 rounded-full bg-blue-400" />
       </span>
       Live
     </span>

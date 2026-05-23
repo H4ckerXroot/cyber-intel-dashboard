@@ -72,13 +72,36 @@ body {
   border: 1px solid rgba(51, 65, 85, 0.55);
 }
 
+.glass-hero {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 18, 32, 0.95) 0%,
+    rgba(6, 12, 22, 0.98) 100%
+  );
+  backdrop-filter: blur(8px);
+}
+
 .hero-glow {
   position: absolute;
   inset: 0;
   background: radial-gradient(
     ellipse 55% 80% at 0% 50%,
-    rgba(37, 99, 235, 0.05),
+    rgba(37, 99, 235, 0.06),
     transparent 65%
+  );
+  pointer-events: none;
+}
+
+.hero-ambient {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 50%;
+  height: 80%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(37, 99, 235, 0.07),
+    transparent 70%
   );
   pointer-events: none;
 }
