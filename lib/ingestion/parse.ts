@@ -2,6 +2,8 @@ import Parser from "rss-parser";
 import { categorizeArticle } from "@/lib/categorize";
 import { enrichArticle } from "@/lib/enrichment";
 import type { CTISource, FeedIngestMethod, ThreatArticle } from "@/lib/types";
+import { fetchValidated } from "./http";
+import { classifyResponse, detectFeedType } from "./validate";
 import type { ScrapedItem } from "./scrape";
 
 const parser = new Parser({
@@ -112,12 +114,22 @@ function buildArticle(
   return enrichArticle(base);
 }
 
-export async function parseFeedUrl(
-  url: string,
+export async function parseFeedXml(
+  xml: string,
+  feedUrl: string,
   source: CTISource,
   method: FeedIngestMethod
 ): Promise<ThreatArticle[]> {
-  const parsed = await parser.parseURL(url);
+  if (!xml.trim()) return [];
+
+  let parsed: Awaited<ReturnType<typeof parser.parseString>>;
+  try {
+    parsed = await parser.parseString(xml);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "XML parse failed";
+    throw new Error(`Feed XML parse error: ${msg}`);
+  }
+
   const articles: ThreatArticle[] = [];
 
   for (const item of parsed.items ?? []) {
@@ -137,7 +149,7 @@ export async function parseFeedUrl(
       );
 
     articles.push(
-      buildArticle(source, url, method, {
+      buildArticle(source, feedUrl, method, {
         title,
         link,
         summary: rawSummary,
@@ -148,6 +160,21 @@ export async function parseFeedUrl(
   }
 
   return articles;
+}
+
+/** Fetches and parses — prefer parseFeedXml with a pre-validated body in ingestion. */
+export async function parseFeedUrl(
+  url: string,
+  source: CTISource,
+  method: FeedIngestMethod
+): Promise<ThreatArticle[]> {
+  const fetched = await fetchValidated(url, 12_000);
+  if (!fetched) return [];
+
+  const classified = classifyResponse(fetched);
+  if (!classified.feedType && !detectFeedType(fetched.text)) return [];
+
+  return parseFeedXml(fetched.text, url, source, method);
 }
 
 export function scrapedToArticles(

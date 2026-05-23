@@ -1,6 +1,7 @@
 "use client";
 
 import { ALL_CATEGORY_ID, type FilterValue } from "@/lib/categories";
+import { parseFeedsApiResponse } from "@/lib/ingestion/api-client";
 import { prioritizeArticles } from "@/lib/ingestion/prioritize";
 import type {
   FeedsApiResponse,
@@ -26,6 +27,7 @@ export function useThreatFeeds() {
   const [healthSummary, setHealthSummary] =
     useState<FeedsApiResponse["healthSummary"]>();
   const [fetchedAt, setFetchedAt] = useState<string>();
+  const [syncedAt, setSyncedAt] = useState<string>();
   const [feedStats, setFeedStats] = useState({ success: 0, total: 0 });
   const [filteredOutCount, setFilteredOutCount] = useState(0);
   const [search, setSearch] = useState("");
@@ -46,9 +48,12 @@ export function useThreatFeeds() {
     try {
       const res = await fetch(`/api/feeds?t=${Date.now()}`, {
         cache: "no-store",
-        headers: { "Cache-Control": "no-cache" },
+        headers: {
+          Accept: "application/json",
+          "Cache-Control": "no-cache",
+        },
       });
-      const data: FeedsApiResponse = await res.json();
+      const data = await parseFeedsApiResponse(res);
 
       if (!res.ok && data.articles.length === 0) {
         throw new Error(
@@ -59,6 +64,7 @@ export function useThreatFeeds() {
 
       setArticles(sortArticles(data.articles));
       setFetchedAt(data.fetchedAt);
+      setSyncedAt(data.syncedAt ?? data.fetchedAt);
       setFeedErrors(data.errors);
       setFeedHealth(data.feedHealth);
       setHealthSummary(data.healthSummary);
@@ -177,6 +183,7 @@ export function useThreatFeeds() {
     feedHealth,
     healthSummary,
     fetchedAt,
+    syncedAt,
     feedStats,
     filteredOutCount,
     search,

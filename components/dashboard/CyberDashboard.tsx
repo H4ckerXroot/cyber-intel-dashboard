@@ -1,6 +1,7 @@
 "use client";
 
 import { AnalystProfile } from "@/components/dashboard/AnalystProfile";
+import { FeedDiagnostics } from "@/components/dashboard/FeedDiagnostics";
 import { IntelWidgets } from "@/components/dashboard/IntelWidgets";
 import { PersonalSection } from "@/components/dashboard/PersonalSection";
 import { PriorityIntel } from "@/components/dashboard/PriorityIntel";
@@ -21,7 +22,7 @@ import { ALL_CATEGORY_ID } from "@/lib/categories";
 import type { ThreatArticle, ThreatCategory } from "@/lib/types";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { useThreatFeeds } from "@/hooks/useThreatFeeds";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const SECONDARY_SECTIONS: ThreatCategory[] = [
   "malware-analysis",
@@ -38,7 +39,10 @@ export function CyberDashboard() {
     refreshing,
     error,
     feedErrors,
+    feedHealth,
+    healthSummary,
     fetchedAt,
+    syncedAt,
     feedStats,
     filteredOutCount,
     search,
@@ -67,6 +71,25 @@ export function CyberDashboard() {
   const [selectedArticle, setSelectedArticle] = useState<ThreatArticle | null>(
     null
   );
+  const [feedDiagnosticsOpen, setFeedDiagnosticsOpen] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("feedDebug") === "1") {
+      setFeedDiagnosticsOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey && e.shiftKey && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        setFeedDiagnosticsOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const scrollToSection = useCallback((sectionId: string) => {
     setActiveSection(sectionId);
@@ -322,6 +345,14 @@ export function CyberDashboard() {
       <ArticleModal
         article={selectedArticle}
         onClose={() => setSelectedArticle(null)}
+      />
+
+      <FeedDiagnostics
+        open={feedDiagnosticsOpen}
+        onClose={() => setFeedDiagnosticsOpen(false)}
+        feedHealth={feedHealth}
+        healthSummary={healthSummary}
+        syncedAt={syncedAt}
       />
     </div>
   );

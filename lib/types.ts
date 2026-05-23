@@ -67,7 +67,10 @@ export type FeedHealthStatus =
   | "degraded"
   | "failed"
   | "timeout"
-  | "unsupported";
+  | "blocked"
+  | "invalid"
+  | "unsupported"
+  | "parsing_failed";
 
 export interface CTISource {
   name: string;
@@ -82,7 +85,11 @@ export interface FeedHealthRecord {
   method: FeedIngestMethod;
   articleCount: number;
   reliability: number;
+  sourceUrl?: string;
   resolvedUrl?: string;
+  responseType?: string;
+  lastSync?: string;
+  errorReason?: string;
   message?: string;
   durationMs?: number;
 }
@@ -92,13 +99,17 @@ export interface FeedHealthSummary {
   degraded: number;
   failed: number;
   timeout: number;
+  blocked: number;
+  invalid: number;
   unsupported: number;
+  parsing_failed: number;
   total: number;
 }
 
 export interface FeedsApiResponse {
   articles: ThreatArticle[];
   fetchedAt: string;
+  syncedAt?: string;
   totalCount: number;
   feedSuccessCount?: number;
   feedTotalCount?: number;

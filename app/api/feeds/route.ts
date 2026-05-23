@@ -19,12 +19,14 @@ export async function GET() {
       healthSummary,
       marketingFiltered,
       duplicateFiltered,
+      syncedAt,
     } = await fetchAllFeeds();
 
     return NextResponse.json(
       {
         articles,
         fetchedAt: new Date().toISOString(),
+        syncedAt,
         totalCount: articles.length,
         feedSuccessCount,
         feedTotalCount,

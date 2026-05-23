@@ -4,8 +4,21 @@ const DEFAULT_UA =
 const DEFAULT_HEADERS = {
   "User-Agent": DEFAULT_UA,
   Accept:
-    "application/rss+xml, application/atom+xml, application/xml, text/xml, text/html, */*",
+    "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
 };
+
+const MAX_BODY_BYTES = 512_000;
+
+export interface FetchResult {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  contentType: string;
+  finalUrl: string;
+  requestedUrl: string;
+  text: string;
+  redirected: boolean;
+}
 
 export async function fetchWithTimeout(
   url: string,
@@ -27,16 +40,39 @@ export async function fetchWithTimeout(
   }
 }
 
+export async function fetchValidated(
+  url: string,
+  timeoutMs: number
+): Promise<FetchResult | null> {
+  try {
+    const res = await fetchWithTimeout(url, timeoutMs);
+    const contentType = res.headers.get("content-type") ?? "";
+    const text = (await res.text()).slice(0, MAX_BODY_BYTES);
+
+    return {
+      ok: res.ok,
+      status: res.status,
+      statusText: res.statusText,
+      contentType,
+      finalUrl: res.url,
+      requestedUrl: url,
+      text,
+      redirected: res.redirected,
+    };
+  } catch (err) {
+    if (err instanceof Error && /abort/i.test(err.message)) {
+      throw err;
+    }
+    return null;
+  }
+}
+
+/** @deprecated Prefer fetchValidated for feed ingestion */
 export async function fetchText(
   url: string,
   timeoutMs: number
 ): Promise<string | null> {
-  try {
-    const res = await fetchWithTimeout(url, timeoutMs);
-    if (!res.ok) return null;
-    const text = await res.text();
-    return text.slice(0, 512_000);
-  } catch {
-    return null;
-  }
+  const result = await fetchValidated(url, timeoutMs);
+  if (!result || !result.ok) return null;
+  return result.text;
 }

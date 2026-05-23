@@ -1,4 +1,4 @@
-import { fetchText } from "./http";
+import { fetchValidated } from "./http";
 import { validateFeedUrl } from "./validate";
 
 const COMMON_FEED_PATHS = [
@@ -60,11 +60,15 @@ export async function discoverFeedUrl(
 
   const candidates = new Set<string>();
 
-  const html = await fetchText(siteUrl, timeoutMs);
-  if (html) {
-    for (const u of extractAlternateFeeds(html, siteUrl)) {
-      candidates.add(u);
+  try {
+    const page = await fetchValidated(siteUrl, timeoutMs);
+    if (page?.text && page.ok) {
+      for (const u of extractAlternateFeeds(page.text, siteUrl)) {
+        candidates.add(u);
+      }
     }
+  } catch {
+    /* site unreachable */
   }
 
   for (const path of COMMON_FEED_PATHS) {
