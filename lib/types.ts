@@ -51,11 +51,49 @@ export interface ThreatArticle {
   tags?: ThreatTag[];
   mitreTechniques?: MitreTechnique[];
   recommendedActions?: string[];
+  sourceReliability?: number;
+  ingestMethod?: FeedIngestMethod;
 }
 
 export interface FeedSource {
   name: string;
   url: string;
+}
+
+export type FeedIngestMethod = "rss" | "atom" | "discovered" | "scrape" | "none";
+
+export type FeedHealthStatus =
+  | "online"
+  | "degraded"
+  | "failed"
+  | "timeout"
+  | "unsupported";
+
+export interface CTISource {
+  name: string;
+  siteUrl: string;
+  feedUrl?: string;
+  reliability: number;
+}
+
+export interface FeedHealthRecord {
+  name: string;
+  status: FeedHealthStatus;
+  method: FeedIngestMethod;
+  articleCount: number;
+  reliability: number;
+  resolvedUrl?: string;
+  message?: string;
+  durationMs?: number;
+}
+
+export interface FeedHealthSummary {
+  online: number;
+  degraded: number;
+  failed: number;
+  timeout: number;
+  unsupported: number;
+  total: number;
 }
 
 export interface FeedsApiResponse {
@@ -66,6 +104,10 @@ export interface FeedsApiResponse {
   feedTotalCount?: number;
   maxAgeHours?: number;
   filteredOutCount?: number;
+  marketingFiltered?: number;
+  duplicateFiltered?: number;
+  feedHealth?: FeedHealthRecord[];
+  healthSummary?: FeedHealthSummary;
   errors?: { feed: string; message: string }[];
 }
 

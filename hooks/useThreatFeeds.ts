@@ -1,6 +1,7 @@
 "use client";
 
 import { ALL_CATEGORY_ID, type FilterValue } from "@/lib/categories";
+import { prioritizeArticles } from "@/lib/ingestion/prioritize";
 import type {
   FeedsApiResponse,
   ThreatArticle,
@@ -9,11 +10,10 @@ import type {
 } from "@/lib/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+const AUTO_REFRESH_MS = 5 * 60 * 1000;
+
 function sortArticles(articles: ThreatArticle[]): ThreatArticle[] {
-  return [...articles].sort(
-    (a, b) =>
-      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
+  return prioritizeArticles(articles);
 }
 
 export function useThreatFeeds() {
@@ -22,6 +22,9 @@ export function useThreatFeeds() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [feedErrors, setFeedErrors] = useState<FeedsApiResponse["errors"]>();
+  const [feedHealth, setFeedHealth] = useState<FeedsApiResponse["feedHealth"]>();
+  const [healthSummary, setHealthSummary] =
+    useState<FeedsApiResponse["healthSummary"]>();
   const [fetchedAt, setFetchedAt] = useState<string>();
   const [feedStats, setFeedStats] = useState({ success: 0, total: 0 });
   const [filteredOutCount, setFilteredOutCount] = useState(0);
@@ -57,6 +60,8 @@ export function useThreatFeeds() {
       setArticles(sortArticles(data.articles));
       setFetchedAt(data.fetchedAt);
       setFeedErrors(data.errors);
+      setFeedHealth(data.feedHealth);
+      setHealthSummary(data.healthSummary);
       setFilteredOutCount(data.filteredOutCount ?? 0);
       setFeedStats({
         success: data.feedSuccessCount ?? 0,
@@ -76,6 +81,26 @@ export function useThreatFeeds() {
 
   useEffect(() => {
     fetchFeeds(false);
+  }, [fetchFeeds]);
+
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        fetchFeeds(true);
+      }
+    };
+
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        fetchFeeds(true);
+      }
+    }, AUTO_REFRESH_MS);
+
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, [fetchFeeds]);
 
   const filteredArticles = useMemo(() => {
@@ -149,6 +174,8 @@ export function useThreatFeeds() {
     isBusy,
     error,
     feedErrors,
+    feedHealth,
+    healthSummary,
     fetchedAt,
     feedStats,
     filteredOutCount,

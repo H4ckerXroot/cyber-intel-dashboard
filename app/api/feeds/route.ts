@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import { CTI_SOURCE_COUNT } from "@/lib/feeds/sources";
 import { MAX_ARTICLE_AGE_HOURS } from "@/lib/freshness";
-import { RSS_FEEDS } from "@/lib/feeds";
-import { fetchAllFeeds } from "@/lib/rss";
+import { fetchAllFeeds } from "@/lib/ingestion/engine";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -15,18 +15,33 @@ export async function GET() {
       feedSuccessCount,
       feedTotalCount,
       filteredOutCount,
+      feedHealth,
+      healthSummary,
+      marketingFiltered,
+      duplicateFiltered,
     } = await fetchAllFeeds();
 
-    return NextResponse.json({
-      articles,
-      fetchedAt: new Date().toISOString(),
-      totalCount: articles.length,
-      feedSuccessCount,
-      feedTotalCount,
-      maxAgeHours: MAX_ARTICLE_AGE_HOURS,
-      filteredOutCount,
-      ...(errors.length > 0 ? { errors } : {}),
-    });
+    return NextResponse.json(
+      {
+        articles,
+        fetchedAt: new Date().toISOString(),
+        totalCount: articles.length,
+        feedSuccessCount,
+        feedTotalCount,
+        maxAgeHours: MAX_ARTICLE_AGE_HOURS,
+        filteredOutCount,
+        feedHealth,
+        healthSummary,
+        marketingFiltered,
+        duplicateFiltered,
+        ...(errors.length > 0 ? { errors } : {}),
+      },
+      {
+        headers: {
+          "Cache-Control": "private, max-age=60, stale-while-revalidate=120",
+        },
+      }
+    );
   } catch (err) {
     const message =
       err instanceof Error
@@ -39,10 +54,10 @@ export async function GET() {
         fetchedAt: new Date().toISOString(),
         totalCount: 0,
         feedSuccessCount: 0,
-        feedTotalCount: RSS_FEEDS.length,
+        feedTotalCount: CTI_SOURCE_COUNT,
         maxAgeHours: MAX_ARTICLE_AGE_HOURS,
         filteredOutCount: 0,
-        errors: [{ feed: "all", message }],
+        errors: [{ feed: "aggregation", message }],
       },
       { status: 500 }
     );

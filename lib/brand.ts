@@ -11,6 +11,6 @@ export const BRAND = {
   analystTimezone: "UTC+0",
   footer: "Powered by Cyber Threat Intelligence Automation",
   footerPersonal: "Built personally for Kanvi ❤️",
-  feedCount: 12,
+  feedCount: 67,
   maxArticleAgeHours: 48,
 } as const;
