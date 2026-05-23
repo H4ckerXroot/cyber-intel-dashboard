@@ -8,6 +8,29 @@ export type ThreatCategory =
 
 export type ThreatSeverity = "critical" | "high" | "medium" | "low";
 
+export type IOCType = "cve" | "ip" | "domain" | "hash" | "url";
+
+export interface IOC {
+  type: IOCType;
+  value: string;
+}
+
+export type ThreatTag =
+  | "ransomware"
+  | "phishing"
+  | "malware"
+  | "zero-day"
+  | "cloud-attack"
+  | "ai-threat"
+  | "supply-chain"
+  | "insider-threat";
+
+export interface MitreTechnique {
+  id: string;
+  name: string;
+  tactic: string;
+}
+
 export interface ThreatArticle {
   id: string;
   title: string;
@@ -19,6 +42,15 @@ export interface ThreatArticle {
   category: ThreatCategory;
   severity: ThreatSeverity;
   image?: string;
+  aiSummary?: string;
+  impact?: string;
+  affectedTechnologies?: string[];
+  threatScore?: number;
+  severityReason?: string;
+  iocs?: IOC[];
+  tags?: ThreatTag[];
+  mitreTechniques?: MitreTechnique[];
+  recommendedActions?: string[];
 }
 
 export interface FeedSource {

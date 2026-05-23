@@ -4,6 +4,7 @@ import { BookmarkActions } from "@/components/ui/BookmarkActions";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { SeverityBadge } from "@/components/ui/SeverityBadge";
 import { SourceBadge } from "@/components/ui/SourceBadge";
+import { ThreatTagBadge } from "@/components/ui/ThreatTagBadge";
 import type { ThreatArticle } from "@/lib/types";
 import { formatFullDate, formatRelativeTime, cn } from "@/lib/utils";
 import { useState } from "react";
@@ -104,16 +105,27 @@ export function NewsCard({
           {article.title}
         </h3>
 
-        {article.summary && (
+        {(article.aiSummary || article.summary) && (
           <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
-            {article.summary}
+            {article.aiSummary ?? article.summary}
           </p>
         )}
 
         <div className="mt-auto space-y-2 border-t border-slate-800/60 pt-2.5">
           <div className="flex flex-wrap items-center gap-2">
             <CategoryBadge category={article.category} />
+            {article.tags?.slice(0, 2).map((tag) => (
+              <ThreatTagBadge key={tag} tag={tag} />
+            ))}
           </div>
+          {(article.iocs?.length ?? 0) > 0 && (
+            <p className="text-[10px] text-slate-500">
+              {article.iocs!.length} IOC{article.iocs!.length === 1 ? "" : "s"} detected
+              {article.threatScore != null && (
+                <span className="text-slate-600"> · Score {article.threatScore}</span>
+              )}
+            </p>
+          )}
           <div className="flex items-center justify-between gap-2 text-[11px]">
             {showImage && <SourceBadge source={article.source} className="max-w-[55%]" />}
             <time

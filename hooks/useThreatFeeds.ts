@@ -93,7 +93,7 @@ export function useThreatFeeds() {
       if (!query) return true;
 
       const haystack =
-        `${article.title} ${article.summary} ${article.source} ${article.severity}`.toLowerCase();
+        `${article.title} ${article.summary} ${article.aiSummary ?? ""} ${article.source} ${article.severity} ${(article.tags ?? []).join(" ")} ${(article.iocs ?? []).map((i) => i.value).join(" ")}`.toLowerCase();
       return haystack.includes(query);
     });
 

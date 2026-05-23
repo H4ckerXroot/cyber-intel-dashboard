@@ -1,8 +1,8 @@
 import Parser from "rss-parser";
 import { categorizeArticle } from "./categorize";
+import { enrichArticle } from "./enrichment";
 import { filterFreshArticles } from "./freshness";
 import { RSS_FEEDS } from "./feeds";
-import { classifySeverity } from "./severity";
 import type { FeedSource, ThreatArticle } from "./types";
 
 const MAX_RETRIES = 2;
@@ -149,10 +149,9 @@ function normalizeItem(
       );
     const summary = rawSummary.slice(0, 400);
     const category = categorizeArticle(title, summary, feed.name);
-    const severity = classifySeverity(title, summary);
     const image = extractImage(item);
 
-    return {
+    const base: ThreatArticle = {
       id: toArticleId(link, title),
       title,
       link,
@@ -161,9 +160,11 @@ function normalizeItem(
       source: feed.name,
       feedUrl: feed.url,
       category,
-      severity,
+      severity: "low",
       ...(image ? { image } : {}),
     };
+
+    return enrichArticle(base);
   } catch {
     return null;
   }
