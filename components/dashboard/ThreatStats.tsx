@@ -45,7 +45,7 @@ export function ThreatStats({
       accent: "from-orange-950/25 to-transparent",
     },
     {
-      label: "Feeds Online",
+      label: "Feeds Operational",
       value: feedSuccess,
       suffix: `/${feedTotal}`,
       color: "text-blue-400",

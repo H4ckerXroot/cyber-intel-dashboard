@@ -75,7 +75,8 @@ export type FeedHealthStatus =
 export interface CTISource {
   name: string;
   siteUrl: string;
-  feedUrl?: string;
+  /** Required — RSS/Atom endpoint only (no HTML discovery). */
+  feedUrl: string;
   reliability: number;
 }
 

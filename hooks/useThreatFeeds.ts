@@ -1,6 +1,10 @@
 "use client";
 
 import { ALL_CATEGORY_ID, type FilterValue } from "@/lib/categories";
+import {
+  CLIENT_AUTO_REFRESH_MS,
+  CLIENT_FEED_FETCH_TIMEOUT_MS,
+} from "@/lib/feeds/config";
 import { parseFeedsApiResponse } from "@/lib/ingestion/api-client";
 import { prioritizeArticles } from "@/lib/ingestion/prioritize";
 import type {
@@ -10,8 +14,6 @@ import type {
   ThreatSeverity,
 } from "@/lib/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-const AUTO_REFRESH_MS = 5 * 60 * 1000;
 
 function sortArticles(articles: ThreatArticle[]): ThreatArticle[] {
   return prioritizeArticles(articles);
@@ -36,8 +38,22 @@ export function useThreatFeeds() {
     "all"
   );
   const initialLoad = useRef(true);
+  const fetchAbortRef = useRef<AbortController | null>(null);
+  const fetchInFlightRef = useRef(false);
 
   const fetchFeeds = useCallback(async (isRefresh = false) => {
+    if (fetchInFlightRef.current) return;
+    fetchInFlightRef.current = true;
+
+    fetchAbortRef.current?.abort();
+    const abort = new AbortController();
+    fetchAbortRef.current = abort;
+
+    const timeoutId = setTimeout(
+      () => abort.abort(),
+      CLIENT_FEED_FETCH_TIMEOUT_MS
+    );
+
     if (isRefresh) {
       setRefreshing(true);
     } else {
@@ -48,6 +64,7 @@ export function useThreatFeeds() {
     try {
       const res = await fetch(`/api/feeds?t=${Date.now()}`, {
         cache: "no-store",
+        signal: abort.signal,
         headers: {
           Accept: "application/json",
           "Cache-Control": "no-cache",
@@ -74,9 +91,17 @@ export function useThreatFeeds() {
         total: data.feedTotalCount ?? 0,
       });
     } catch (err) {
+      if (abort.signal.aborted) {
+        if (initialLoad.current) {
+          setError("Feed sync timed out — try refresh");
+        }
+        return;
+      }
       const message = err instanceof Error ? err.message : "Network error";
       setError(message);
     } finally {
+      clearTimeout(timeoutId);
+      fetchInFlightRef.current = false;
       setLoading(false);
       setRefreshing(false);
       initialLoad.current = false;
@@ -90,22 +115,15 @@ export function useThreatFeeds() {
   }, [fetchFeeds]);
 
   useEffect(() => {
-    const onVisibility = () => {
-      if (document.visibilityState === "visible") {
-        fetchFeeds(true);
-      }
-    };
-
     const interval = setInterval(() => {
       if (document.visibilityState === "visible") {
         fetchFeeds(true);
       }
-    }, AUTO_REFRESH_MS);
+    }, CLIENT_AUTO_REFRESH_MS);
 
-    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisibility);
+      fetchAbortRef.current?.abort();
     };
   }, [fetchFeeds]);
 

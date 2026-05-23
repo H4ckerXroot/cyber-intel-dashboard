@@ -68,7 +68,8 @@ export function Header({
             <p className="text-[11px] text-slate-500">Sync · {syncLabel}</p>
             {feedSuccess != null && feedTotal && !loading && !refreshing && (
               <p className="text-[11px] tabular-nums text-slate-600">
-                {feedSuccess}/{feedTotal} feeds · {articleCount} signals
+                {feedSuccess}/{feedTotal} feeds operational · {articleCount}{" "}
+                signals
               </p>
             )}
           </div>

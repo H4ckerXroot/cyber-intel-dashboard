@@ -5,7 +5,7 @@ import { fetchAllFeeds } from "@/lib/ingestion/engine";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-export const maxDuration = 60;
+export const maxDuration = 30;
 
 export async function GET() {
   try {
@@ -40,7 +40,7 @@ export async function GET() {
       },
       {
         headers: {
-          "Cache-Control": "private, max-age=60, stale-while-revalidate=120",
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=180",
         },
       }
     );
