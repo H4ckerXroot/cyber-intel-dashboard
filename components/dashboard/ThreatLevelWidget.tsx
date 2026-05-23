@@ -21,37 +21,35 @@ export function ThreatLevelWidget({
   const meta = THREAT_LEVEL_META[level];
 
   return (
-    <div className={cn("glass-card rounded-lg p-4", className)}>
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+    <div className={cn("soc-card px-3 py-2.5", className)}>
+      <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         Threat Level
       </p>
 
-      <div className="mt-2 flex items-center gap-2.5">
+      <div className="mt-1.5 flex items-center gap-2">
         <span
           className={cn(
-            "h-2.5 w-2.5 rounded-full",
+            "h-2 w-2 shrink-0 rounded-full",
             meta.dot,
             (level === "high" || level === "critical") && "animate-subtle-pulse"
           )}
           aria-hidden
         />
-        <span className={cn("text-lg font-semibold", meta.color.split(" ")[0])}>
+        <span className={cn("text-base font-semibold leading-none", meta.color.split(" ")[0])}>
           {meta.label}
         </span>
       </div>
 
-      <p className="mt-1.5 text-[11px] leading-snug text-slate-500">
-        {meta.description}
-      </p>
+      <p className="mt-1 text-[10px] leading-snug text-slate-500">{meta.description}</p>
 
-      <div className="mt-3 grid grid-cols-4 gap-1.5 border-t border-slate-800/80 pt-3">
+      <div className="mt-2 grid grid-cols-4 gap-1 border-t border-slate-800/70 pt-2">
         {(Object.keys(THREAT_LEVEL_META) as ThreatLevelStatus[]).map((key) => {
           const active = key === level;
           return (
             <div
               key={key}
               className={cn(
-                "rounded px-1.5 py-1 text-center text-[9px] font-medium",
+                "rounded px-1 py-0.5 text-center text-[8px] font-medium uppercase tracking-wide",
                 active ? THREAT_LEVEL_META[key].color : "text-slate-600"
               )}
             >

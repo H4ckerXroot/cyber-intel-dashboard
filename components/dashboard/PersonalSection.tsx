@@ -39,18 +39,18 @@ export function PersonalSection({
   return (
     <section
       id={id}
-      className={cn("scroll-mt-20 flex flex-col gap-2.5", className)}
+      className={cn("scroll-mt-16 flex flex-col gap-2", className)}
       aria-labelledby={`${id}-heading`}
     >
-      <div className="flex items-center gap-2.5 border-b border-slate-800/60 pb-2">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-slate-800/80 text-sm">
+      <div className="flex items-center gap-2 border-b border-slate-800/50 pb-1.5">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-slate-800/60 text-xs">
           {icon}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 id={`${id}-heading`} className="text-sm font-semibold text-slate-100">
+          <h2 id={`${id}-heading`} className="section-heading">
             {title}
           </h2>
-          <p className="text-[11px] text-slate-500">{description}</p>
+          <p className="section-subheading">{description}</p>
         </div>
         <span className="shrink-0 text-xs tabular-nums text-slate-500">
           {articles.length}
@@ -64,7 +64,7 @@ export function PersonalSection({
           <p className="text-sm text-slate-500">{emptyMessage}</p>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {articles.map((article) => (
             <NewsCard
               key={article.id}

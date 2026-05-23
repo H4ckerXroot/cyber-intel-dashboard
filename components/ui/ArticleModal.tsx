@@ -23,8 +23,8 @@ function IntelBlock({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-slate-800/80 bg-slate-900/50 p-3.5">
-      <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+    <section className="rounded-md border border-slate-800/70 bg-slate-900/40 px-3 py-2.5">
+      <h3 className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-slate-500">
         {title}
       </h3>
       {children}
@@ -60,26 +60,26 @@ export function ArticleModal({ article, onClose }: ArticleModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="article-modal-title"
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/70 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-black/65 backdrop-blur-[1px]"
         onClick={onClose}
         aria-label="Close dialog"
       />
 
       <div
         className={cn(
-          "relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl",
-          "border border-slate-700/80 bg-slate-900 shadow-2xl animate-fade-in"
+          "relative z-10 flex max-h-[88vh] w-full max-w-xl flex-col overflow-hidden rounded-lg",
+          "border border-slate-700/70 bg-[#070f1a] shadow-xl animate-fade-in"
         )}
       >
-        <div className="shrink-0 border-b border-slate-800 px-5 py-4 sm:px-6">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="shrink-0 border-b border-slate-800/80 px-4 py-3">
+          <div className="flex flex-wrap items-center gap-1.5">
             <SeverityBadge severity={article.severity} size="md" />
             <CategoryBadge category={article.category} size="md" />
             {tags.slice(0, 4).map((tag) => (
@@ -88,48 +88,47 @@ export function ArticleModal({ article, onClose }: ArticleModalProps) {
           </div>
           <h2
             id="article-modal-title"
-            className="mt-3 text-lg font-semibold leading-snug text-slate-50"
+            className="mt-2 text-base font-semibold leading-snug text-slate-50"
           >
             {article.title}
           </h2>
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4 sm:px-6">
-          <div className="flex flex-wrap items-center gap-3 text-sm">
+        <div className="flex-1 space-y-2.5 overflow-y-auto px-4 py-3">
+          <div className="flex flex-wrap items-center gap-2 text-[11px]">
             <SourceBadge source={article.source} className="max-w-none" />
             <time dateTime={article.publishedAt} className="text-slate-500">
               {formatFullDate(article.publishedAt)}
             </time>
           </div>
 
-          <ThreatScoreGauge
-            score={threatScore}
-            severity={article.severity}
-          />
+          <ThreatScoreGauge score={threatScore} severity={article.severity} />
 
           {article.severityReason && (
-            <p className="text-xs text-slate-500">{article.severityReason}</p>
+            <p className="text-[11px] leading-snug text-slate-500">
+              {article.severityReason}
+            </p>
           )}
 
           <IntelBlock title="AI Threat Summary">
-            <p className="text-sm leading-relaxed text-slate-200">
+            <p className="text-[13px] leading-relaxed text-slate-200">
               {article.aiSummary ?? article.summary}
             </p>
             {article.impact && (
-              <p className="mt-2.5 border-t border-slate-800/60 pt-2.5 text-sm leading-relaxed text-slate-400">
-                <span className="font-medium text-slate-300">Impact: </span>
+              <p className="mt-2 border-t border-slate-800/50 pt-2 text-[12px] leading-relaxed text-slate-400">
+                <span className="font-medium text-slate-300">Impact · </span>
                 {article.impact}
               </p>
             )}
           </IntelBlock>
 
           {technologies.length > 0 && (
-            <IntelBlock title="Affected Technologies / Vendors">
-              <div className="flex flex-wrap gap-1.5">
+            <IntelBlock title="Affected Technologies">
+              <div className="flex flex-wrap gap-1">
                 {technologies.map((tech) => (
                   <span
                     key={tech}
-                    className="rounded-md border border-slate-700/80 bg-slate-800/60 px-2 py-1 text-xs text-slate-300"
+                    className="rounded border border-slate-700/60 bg-slate-800/50 px-1.5 py-0.5 text-[11px] text-slate-300"
                   >
                     {tech}
                   </span>
@@ -138,32 +137,30 @@ export function ArticleModal({ article, onClose }: ArticleModalProps) {
             </IntelBlock>
           )}
 
-          <IntelBlock title="Indicators of Compromise (IOCs)">
+          <IntelBlock title="Indicators (IOCs)">
             <IOCPanel iocs={iocs} />
           </IntelBlock>
 
           {mitre.length > 0 && (
-            <IntelBlock title="MITRE ATT&CK — Suggested Tactics">
-              <ul className="space-y-2">
+            <IntelBlock title="MITRE ATT&CK">
+              <ul className="space-y-1.5">
                 {mitre.map((technique) => (
                   <li
                     key={technique.id}
-                    className="flex flex-col gap-0.5 rounded-md border border-slate-800 bg-slate-950/40 px-3 py-2"
+                    className="rounded border border-slate-800/80 bg-slate-950/30 px-2.5 py-1.5"
                   >
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <a
                         href={`https://attack.mitre.org/techniques/${technique.id.replace(/\./g, "/")}/`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-mono text-xs font-semibold text-blue-400 hover:text-blue-300"
+                        className="font-mono text-[11px] font-semibold text-blue-400/90 hover:text-blue-300"
                       >
                         {technique.id}
                       </a>
-                      <span className="text-xs text-slate-500">
-                        {technique.tactic}
-                      </span>
+                      <span className="text-[10px] text-slate-600">{technique.tactic}</span>
                     </div>
-                    <span className="text-sm text-slate-300">{technique.name}</span>
+                    <span className="text-[12px] text-slate-400">{technique.name}</span>
                   </li>
                 ))}
               </ul>
@@ -172,7 +169,7 @@ export function ArticleModal({ article, onClose }: ArticleModalProps) {
 
           {actions.length > 0 && (
             <IntelBlock title="Recommended Actions">
-              <ol className="list-decimal space-y-2 pl-4 text-sm leading-relaxed text-slate-300">
+              <ol className="list-decimal space-y-1.5 pl-3.5 text-[12px] leading-relaxed text-slate-300">
                 {actions.map((action) => (
                   <li key={action}>{action}</li>
                 ))}
@@ -181,19 +178,17 @@ export function ArticleModal({ article, onClose }: ArticleModalProps) {
           )}
 
           {article.summary && (
-            <IntelBlock title="Source Summary (RSS)">
-              <p className="text-sm leading-relaxed text-slate-400">
-                {article.summary}
-              </p>
+            <IntelBlock title="Source Summary">
+              <p className="text-[12px] leading-relaxed text-slate-500">{article.summary}</p>
             </IntelBlock>
           )}
         </div>
 
-        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-slate-800 px-5 py-4 sm:px-6">
+        <div className="flex shrink-0 items-center justify-end gap-2 border-t border-slate-800/80 px-4 py-2.5">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-200"
+            className="rounded-md px-3 py-1.5 text-[13px] text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-slate-200"
           >
             Close
           </button>
@@ -201,7 +196,7 @@ export function ArticleModal({ article, onClose }: ArticleModalProps) {
             href={article.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-500"
+            className="rounded-md bg-blue-600 px-3 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-blue-500"
           >
             Open Article
           </a>

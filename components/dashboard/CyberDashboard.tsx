@@ -120,8 +120,8 @@ export function CyberDashboard() {
           onMenuToggle={() => setSidebarOpen(true)}
         />
 
-        <main className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
-          <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
+        <main className="min-h-0 flex-1 overflow-y-auto px-3 py-3 sm:px-4 lg:px-5 lg:py-3.5">
+          <div className="mx-auto flex w-full max-w-7xl flex-col gap-3">
             {error && (
               <div
                 className="rounded-lg border border-red-500/25 bg-red-500/5 px-3 py-2 text-sm text-red-300"
@@ -156,7 +156,7 @@ export function CyberDashboard() {
             {/* Overview: compact ops header */}
             <section
               id="overview"
-              className="scroll-mt-20 grid gap-3 lg:grid-cols-12 lg:items-start"
+              className="scroll-mt-16 grid gap-2 lg:grid-cols-12 lg:items-start"
             >
               <div className="lg:col-span-8">
                 <WelcomeSection
@@ -166,7 +166,7 @@ export function CyberDashboard() {
                   articleCount={allArticles.length}
                 />
               </div>
-              <div className="flex flex-col gap-3 lg:col-span-4">
+              <div className="flex flex-col gap-2 lg:col-span-4">
                 <ThreatLevelWidget severityCounts={severityCounts} />
                 <AnalystProfile />
               </div>
@@ -182,7 +182,7 @@ export function CyberDashboard() {
             </section>
 
             {/* Filters toolbar */}
-            <div className="flex flex-col gap-2.5 rounded-lg border border-slate-800/60 bg-slate-900/40 px-3 py-3 sm:px-4">
+            <div className="soc-card flex flex-col gap-2 px-3 py-2.5">
               <CategoryFilter
                 active={categoryFilter}
                 onChange={setCategoryFilter}
@@ -209,7 +209,7 @@ export function CyberDashboard() {
                     </p>
                   </div>
                 ) : (
-                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                     {articles.slice(0, 24).map((article) => (
                       <NewsCard
                         key={article.id}
@@ -225,7 +225,7 @@ export function CyberDashboard() {
                 )}
               </section>
             ) : showPriorityLayout ? (
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-3">
                 <PriorityIntel
                   latestNews={articlesByCategory["latest-threat-news"]}
                   cveAlerts={articlesByCategory["cve-alerts"]}
@@ -238,9 +238,12 @@ export function CyberDashboard() {
                   onToggleWatchlist={toggleWatchlist}
                 />
 
-                <IntelWidgets />
+                <IntelWidgets
+                  severityCounts={severityCounts}
+                  totalArticles={allArticles.length}
+                />
 
-                <div className="flex flex-col gap-5 border-t border-slate-800/60 pt-5">
+                <div className="flex flex-col gap-3 border-t border-slate-800/50 pt-3">
                   {SECONDARY_SECTIONS.map((category) => (
                     <ThreatSection
                       key={category}
@@ -296,7 +299,7 @@ export function CyberDashboard() {
           </div>
         </main>
 
-        <footer className="shrink-0 border-t border-slate-800/80 px-4 py-3 sm:px-6">
+        <footer className="shrink-0 border-t border-slate-800/80 px-3 py-2 sm:px-4">
           <div className="mx-auto flex max-w-7xl flex-col items-center gap-0.5 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="text-[11px] text-slate-600">{BRAND.footer}</p>
             <p className="text-[11px] text-slate-500">{BRAND.footerPersonal}</p>

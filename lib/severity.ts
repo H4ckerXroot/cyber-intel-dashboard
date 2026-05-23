@@ -52,22 +52,22 @@ export const SEVERITY_META: Record<
 > = {
   critical: {
     label: "Critical",
-    className: "bg-red-500/20 text-red-300 border-red-500/40",
-    dotClass: "bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.8)]",
+    className: "bg-red-950/50 text-red-300/95 border-red-900/50",
+    dotClass: "bg-red-400",
   },
   high: {
     label: "High",
-    className: "bg-orange-500/20 text-orange-300 border-orange-500/40",
-    dotClass: "bg-orange-400 shadow-[0_0_8px_rgba(251,146,60,0.8)]",
+    className: "bg-orange-950/40 text-orange-300/95 border-orange-900/45",
+    dotClass: "bg-orange-400",
   },
   medium: {
     label: "Medium",
-    className: "bg-amber-500/20 text-amber-300 border-amber-500/40",
-    dotClass: "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]",
+    className: "bg-amber-950/35 text-amber-300/95 border-amber-900/40",
+    dotClass: "bg-amber-400",
   },
   low: {
     label: "Low",
-    className: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-    dotClass: "bg-sky-400 shadow-[0_0_6px_rgba(56,189,248,0.5)]",
+    className: "bg-slate-800/60 text-slate-400 border-slate-700/50",
+    dotClass: "bg-slate-500",
   },
 };

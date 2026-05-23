@@ -126,34 +126,34 @@ export const TAG_META: Record<
 > = {
   ransomware: {
     label: "Ransomware",
-    className: "bg-red-500/15 text-red-300 border-red-500/30",
+    className: "bg-red-950/40 text-red-300/90 border-red-900/40",
   },
   phishing: {
     label: "Phishing",
-    className: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+    className: "bg-amber-950/35 text-amber-300/90 border-amber-900/40",
   },
   malware: {
     label: "Malware",
-    className: "bg-orange-500/15 text-orange-300 border-orange-500/30",
+    className: "bg-orange-950/35 text-orange-300/90 border-orange-900/40",
   },
   "zero-day": {
     label: "Zero-Day",
-    className: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+    className: "bg-rose-950/35 text-rose-300/90 border-rose-900/40",
   },
   "cloud-attack": {
-    label: "Cloud Attack",
-    className: "bg-sky-500/15 text-sky-300 border-sky-500/30",
+    label: "Cloud",
+    className: "bg-blue-950/35 text-blue-300/90 border-blue-900/40",
   },
   "ai-threat": {
     label: "AI Threat",
-    className: "bg-violet-500/15 text-violet-300 border-violet-500/30",
+    className: "bg-violet-950/35 text-violet-300/90 border-violet-900/40",
   },
   "supply-chain": {
     label: "Supply Chain",
-    className: "bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30",
+    className: "bg-slate-800/50 text-slate-300 border-slate-700/50",
   },
   "insider-threat": {
-    label: "Insider Threat",
-    className: "bg-slate-500/15 text-slate-300 border-slate-500/40",
+    label: "Insider",
+    className: "bg-slate-800/50 text-slate-400 border-slate-700/50",
   },
 };

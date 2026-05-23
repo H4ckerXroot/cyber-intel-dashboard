@@ -11,14 +11,14 @@ const SEVERITY_COLORS: Record<ThreatSeverity, string> = {
   critical: "text-red-400",
   high: "text-orange-400",
   medium: "text-amber-400",
-  low: "text-sky-400",
+  low: "text-slate-400",
 };
 
 const BAR_COLORS: Record<ThreatSeverity, string> = {
-  critical: "bg-red-500",
-  high: "bg-orange-500",
-  medium: "bg-amber-500",
-  low: "bg-sky-500",
+  critical: "bg-red-500/80",
+  high: "bg-orange-500/75",
+  medium: "bg-amber-500/70",
+  low: "bg-slate-600",
 };
 
 export function ThreatScoreGauge({
@@ -29,22 +29,22 @@ export function ThreatScoreGauge({
   const clamped = Math.min(100, Math.max(0, score));
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("rounded-md border border-slate-800/60 bg-slate-900/30 px-2.5 py-2", className)}>
       <div className="flex items-end justify-between gap-2">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-slate-500">
             Threat Score
           </p>
-          <p className={cn("text-2xl font-semibold tabular-nums", SEVERITY_COLORS[severity])}>
+          <p className={cn("text-lg font-semibold tabular-nums leading-none", SEVERITY_COLORS[severity])}>
             {clamped}
-            <span className="text-sm font-normal text-slate-500">/100</span>
+            <span className="text-xs font-normal text-slate-600">/100</span>
           </p>
         </div>
-        <span className="text-xs capitalize text-slate-400">{severity}</span>
+        <span className="text-[10px] capitalize text-slate-500">{severity}</span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+      <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-slate-800">
         <div
-          className={cn("h-full rounded-full transition-all", BAR_COLORS[severity])}
+          className={cn("h-full rounded-full", BAR_COLORS[severity])}
           style={{ width: `${clamped}%` }}
         />
       </div>

@@ -62,10 +62,10 @@ function FilterChip({
       aria-selected={active}
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200",
+        "rounded-md border px-2.5 py-1 text-[11px] font-medium transition-colors",
         active
-          ? "border-blue-500/60 bg-blue-500/20 text-blue-200 shadow-[0_0_14px_rgba(59,130,246,0.25)]"
-          : "border-slate-700/60 bg-slate-900/40 text-slate-400 hover:border-blue-500/30 hover:text-blue-300"
+          ? "border-blue-600/50 bg-blue-600/12 text-blue-200"
+          : "border-slate-700/50 bg-transparent text-slate-500 hover:border-slate-600 hover:text-slate-300"
       )}
     >
       {icon && <span className="mr-1">{icon}</span>}

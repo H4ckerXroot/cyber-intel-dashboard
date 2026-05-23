@@ -9,8 +9,8 @@ export const THREAT_LEVEL_META: Record<
   guarded: {
     label: "Guarded",
     description: "Baseline monitoring — no elevated activity",
-    color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
-    dot: "bg-emerald-400",
+    color: "text-slate-400 border-slate-600/40 bg-slate-800/40",
+    dot: "bg-slate-500",
   },
   elevated: {
     label: "Elevated",

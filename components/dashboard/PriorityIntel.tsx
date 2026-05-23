@@ -29,11 +29,11 @@ function PriorityBlock({
   onToggleWatchlist,
 }: PriorityBlockProps) {
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between gap-2">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">{title}</h3>
-          <p className="text-xs text-slate-500">{description}</p>
+          <h3 className="section-heading">{title}</h3>
+          <p className="section-subheading">{description}</p>
         </div>
         {!loading && (
           <span className="shrink-0 text-xs tabular-nums text-slate-500">
@@ -48,7 +48,7 @@ function PriorityBlock({
           No articles in this category
         </p>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
           {articles.slice(0, 6).map((article) => (
             <NewsCard
               key={article.id}
@@ -94,18 +94,12 @@ export function PriorityIntel({
   return (
     <section
       id="priority-intel"
-      className={cn("scroll-mt-20 flex flex-col gap-4", className)}
+      className={cn("scroll-mt-16 flex flex-col gap-3", className)}
       aria-label="Priority intelligence"
     >
-      <div className="flex items-center justify-between gap-3 border-b border-slate-800/60 pb-2">
-        <div>
-          <h2 className="text-sm font-semibold text-slate-100">
-            Priority Intelligence
-          </h2>
-          <p className="text-xs text-slate-500">
-            Latest news, CVEs, and ransomware
-          </p>
-        </div>
+      <div className="border-b border-slate-800/50 pb-1.5">
+        <h2 className="section-heading">Priority Intelligence</h2>
+        <p className="section-subheading">Latest news, CVEs, and ransomware</p>
       </div>
 
       <div id="latest-threat-news" className="scroll-mt-20">
@@ -122,7 +116,7 @@ export function PriorityIntel({
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2 lg:gap-4">
+      <div className="grid gap-3 lg:grid-cols-2">
         <div id="cve-alerts" className="scroll-mt-20">
           <PriorityBlock
             title="CVE Alerts"

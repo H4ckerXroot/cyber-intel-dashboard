@@ -31,12 +31,12 @@ export function NewsCard({
   const [imgError, setImgError] = useState(false);
   const showImage = article.image && !imgError;
   const relativeTime = formatRelativeTime(article.publishedAt);
+  const preview = article.aiSummary ?? article.summary;
 
   return (
     <article
       className={cn(
-        "glass-card group flex flex-col overflow-hidden rounded-xl transition-all duration-200",
-        "hover:border-slate-600/80 hover:shadow-md hover:shadow-black/20",
+        "soc-card soc-card-hover group flex h-full min-h-[15.5rem] flex-col overflow-hidden",
         onSelect && "cursor-pointer",
         className
       )}
@@ -50,43 +50,41 @@ export function NewsCard({
       role={onSelect ? "button" : undefined}
       tabIndex={onSelect ? 0 : undefined}
     >
-      <div className="relative aspect-[16/9] overflow-hidden bg-slate-900/80">
+      <div className="relative h-[7.25rem] shrink-0 overflow-hidden bg-slate-900/90">
         {showImage ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={article.image}
               alt=""
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+              className="h-full w-full object-cover object-center transition-transform duration-200 group-hover:scale-[1.01]"
               onError={() => setImgError(true)}
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#060d18] via-transparent to-transparent" />
           </>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-1 bg-slate-800/50 px-3">
+          <div className="flex h-full items-center justify-center bg-slate-900/60 px-2">
             <SourceBadge source={article.source} className="max-w-full" />
           </div>
         )}
-        <div className="absolute left-3 top-3">
+        <div className="absolute left-2 top-2">
           <SeverityBadge severity={article.severity} />
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-2.5 p-3.5">
-        {!showImage && (
-          <div className="flex items-center justify-between gap-2">
-            <SourceBadge source={article.source} className="max-w-[75%]" />
-            {onToggleSave && onToggleWatchlist && (
-              <div onClick={(e) => e.stopPropagation()}>
-                <BookmarkActions
-                  saved={saved}
-                  watchlisted={watchlisted}
-                  onToggleSave={onToggleSave}
-                  onToggleWatchlist={onToggleWatchlist}
-                />
-              </div>
-            )}
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 p-2.5">
+        {!showImage && onToggleSave && onToggleWatchlist && (
+          <div className="flex items-center justify-between gap-1">
+            <SourceBadge source={article.source} className="max-w-[70%]" />
+            <div onClick={(e) => e.stopPropagation()}>
+              <BookmarkActions
+                saved={saved}
+                watchlisted={watchlisted}
+                onToggleSave={onToggleSave}
+                onToggleWatchlist={onToggleWatchlist}
+              />
+            </div>
           </div>
         )}
 
@@ -101,36 +99,40 @@ export function NewsCard({
           </div>
         )}
 
-        <h3 className="line-clamp-2 text-sm font-medium leading-snug text-slate-100 group-hover:text-blue-200">
+        <h3 className="line-clamp-2 text-[13px] font-medium leading-snug text-slate-100 group-hover:text-blue-200/90">
           {article.title}
         </h3>
 
-        {(article.aiSummary || article.summary) && (
-          <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
-            {article.aiSummary ?? article.summary}
+        {preview && (
+          <p className="line-clamp-2 text-[11px] leading-relaxed text-slate-500">
+            {preview}
           </p>
         )}
 
-        <div className="mt-auto space-y-2 border-t border-slate-800/60 pt-2.5">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="mt-auto space-y-1.5 border-t border-slate-800/50 pt-2">
+          <div className="flex flex-wrap items-center gap-1">
             <CategoryBadge category={article.category} />
             {article.tags?.slice(0, 2).map((tag) => (
               <ThreatTagBadge key={tag} tag={tag} />
             ))}
           </div>
-          {(article.iocs?.length ?? 0) > 0 && (
-            <p className="text-[10px] text-slate-500">
-              {article.iocs!.length} IOC{article.iocs!.length === 1 ? "" : "s"} detected
-              {article.threatScore != null && (
-                <span className="text-slate-600"> · Score {article.threatScore}</span>
+          <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500">
+            <span className="truncate">
+              {(article.iocs?.length ?? 0) > 0 && (
+                <>
+                  {article.iocs!.length} IOC{article.iocs!.length === 1 ? "" : "s"}
+                  {article.threatScore != null && (
+                    <span className="text-slate-600"> · {article.threatScore}</span>
+                  )}
+                </>
               )}
-            </p>
-          )}
-          <div className="flex items-center justify-between gap-2 text-[11px]">
-            {showImage && <SourceBadge source={article.source} className="max-w-[55%]" />}
+            </span>
+            {showImage && (
+              <SourceBadge source={article.source} className="max-w-[45%] shrink-0" />
+            )}
             <time
               dateTime={article.publishedAt}
-              className="ml-auto shrink-0 text-slate-400"
+              className="ml-auto shrink-0 tabular-nums text-slate-500"
               title={formatFullDate(article.publishedAt)}
             >
               {relativeTime}

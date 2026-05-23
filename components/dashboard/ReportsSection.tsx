@@ -20,19 +20,19 @@ export function ReportsSection({
   const reports = [
     {
       title: "Weekly Summary",
-      desc: "Severity breakdown and source coverage",
+      desc: "Severity breakdown",
       metric: totalArticles,
       label: "articles",
     },
     {
       title: "Priority Digest",
-      desc: "Critical and high-severity items",
+      desc: "Critical + high items",
       metric: severityCounts.critical + severityCounts.high,
       label: "priority",
     },
     {
       title: "Feed Coverage",
-      desc: "Source availability this session",
+      desc: "Active sources",
       metric: 12,
       label: "feeds",
     },
@@ -41,22 +41,22 @@ export function ReportsSection({
   return (
     <section
       id="reports-analytics"
-      className={cn("scroll-mt-20 flex flex-col gap-2.5", className)}
+      className={cn("scroll-mt-16 flex flex-col gap-2", className)}
     >
-      <div className="border-b border-slate-800/60 pb-2">
-        <h2 className="text-sm font-semibold text-slate-100">Reports & Analytics</h2>
-        <p className="text-[11px] text-slate-500">Operational summaries</p>
+      <div className="border-b border-slate-800/50 pb-1.5">
+        <h2 className="section-heading">Reports & Analytics</h2>
+        <p className="section-subheading">Operational summaries</p>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-2 md:grid-cols-3">
         {reports.map((r) => (
-          <div key={r.title} className="glass-card rounded-lg p-3.5">
-            <h3 className="text-sm font-medium text-slate-200">{r.title}</h3>
-            <p className="mt-0.5 text-[11px] text-slate-500">{r.desc}</p>
-            <p className="mt-2 text-xl font-semibold text-blue-400">
+          <div key={r.title} className="soc-card px-3 py-2.5">
+            <h3 className="text-[13px] font-medium text-slate-200">{r.title}</h3>
+            <p className="text-[10px] text-slate-600">{r.desc}</p>
+            <p className="mt-1.5 text-lg font-semibold tabular-nums text-blue-400/90">
               <AnimatedCounter value={r.metric} enabled={!loading} />
             </p>
-            <p className="text-[10px] uppercase tracking-wider text-slate-600">
+            <p className="text-[9px] uppercase tracking-wider text-slate-600">
               {r.label}
             </p>
           </div>

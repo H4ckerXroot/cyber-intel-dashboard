@@ -7,18 +7,14 @@ interface LoadingSkeletonProps {
 
 export function NewsCardSkeleton() {
   return (
-    <div className="glass-card animate-pulse overflow-hidden rounded-2xl">
-      <div className="skeleton-shimmer h-36" />
-      <div className="space-y-3 p-4">
-        <div className="flex gap-2">
-          <div className="skeleton-shimmer h-5 w-20 rounded-full" />
-          <div className="skeleton-shimmer h-5 w-24 rounded-full" />
-        </div>
-        <div className="skeleton-shimmer h-5 w-full rounded" />
-        <div className="skeleton-shimmer h-5 w-4/5 rounded" />
-        <div className="space-y-2">
-          <div className="skeleton-shimmer h-3 w-full rounded" />
-          <div className="skeleton-shimmer h-3 w-2/3 rounded" />
+    <div className="soc-card animate-pulse overflow-hidden">
+      <div className="skeleton-shimmer h-[7.25rem]" />
+      <div className="space-y-2 p-2.5">
+        <div className="skeleton-shimmer h-4 w-full rounded" />
+        <div className="skeleton-shimmer h-4 w-4/5 rounded" />
+        <div className="skeleton-shimmer h-3 w-full rounded" />
+        <div className="mt-2 border-t border-slate-800/50 pt-2">
+          <div className="skeleton-shimmer h-3 w-1/2 rounded" />
         </div>
       </div>
     </div>
@@ -27,7 +23,7 @@ export function NewsCardSkeleton() {
 
 export function LoadingSkeleton({ count = 6, className }: LoadingSkeletonProps) {
   return (
-    <div className={cn("grid gap-3 sm:grid-cols-2 xl:grid-cols-3", className)}>
+    <div className={cn("grid gap-2 sm:grid-cols-2 xl:grid-cols-3", className)}>
       {Array.from({ length: count }).map((_, i) => (
         <NewsCardSkeleton key={i} />
       ))}

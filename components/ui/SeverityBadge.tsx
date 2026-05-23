@@ -18,13 +18,13 @@ export function SeverityBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border font-semibold uppercase tracking-wider",
+        "inline-flex items-center gap-1 rounded border font-semibold uppercase tracking-wide",
         meta.className,
-        size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
+        size === "sm" ? "px-1.5 py-px text-[9px]" : "px-2 py-0.5 text-[10px]",
         className
       )}
     >
-      <span className={cn("h-1.5 w-1.5 rounded-full", meta.dotClass)} aria-hidden />
+      <span className={cn("h-1 w-1 rounded-full", meta.dotClass)} aria-hidden />
       {meta.label}
     </span>
   );
