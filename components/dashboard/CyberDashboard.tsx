@@ -98,7 +98,7 @@ export function CyberDashboard() {
     !!search.trim();
 
   return (
-    <div className="cyber-bg relative flex min-h-screen">
+    <div className="cyber-bg relative flex h-screen overflow-hidden">
       <Sidebar
         activeSection={activeSection}
         onNavigate={scrollToSection}
@@ -106,7 +106,7 @@ export function CyberDashboard() {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+      <div className="relative z-10 flex min-h-0 min-w-0 flex-1 flex-col">
         <Header
           search={search}
           onSearchChange={setSearch}
@@ -117,6 +117,8 @@ export function CyberDashboard() {
           fetchedAt={fetchedAt}
           feedSuccess={feedStats.success}
           feedTotal={feedStats.total}
+          severityCounts={severityCounts}
+          allArticles={allArticles}
           onMenuToggle={() => setSidebarOpen(true)}
         />
 
@@ -193,18 +195,21 @@ export function CyberDashboard() {
               />
             )}
 
-            {/* Filters */}
-            <div className="soc-card flex flex-col gap-2 px-3 py-2.5">
+            {/* Filters — secondary controls */}
+            <div className="filter-toolbar px-3 py-2.5">
+              <p className="filter-toolbar-label mb-2">Filter intelligence</p>
               <CategoryFilter
                 active={categoryFilter}
                 onChange={setCategoryFilter}
                 counts={categoryCounts}
               />
-              <SeverityFilter
-                active={severityFilter}
-                onChange={setSeverityFilter}
-                counts={severityCounts}
-              />
+              <div className="mt-2 border-t border-slate-800/40 pt-2">
+                <SeverityFilter
+                  active={severityFilter}
+                  onChange={setSeverityFilter}
+                  counts={severityCounts}
+                />
+              </div>
             </div>
 
             {hasActiveFilter ? (
@@ -237,7 +242,7 @@ export function CyberDashboard() {
                 )}
               </section>
             ) : showPriorityLayout ? (
-              <div className="flex flex-col gap-3 border-t border-slate-800/40 pt-3">
+              <div className="intel-feed-zone flex flex-col gap-4">
                 <PriorityIntel
                   latestNews={articlesByCategory["latest-threat-news"]}
                   cveAlerts={articlesByCategory["cve-alerts"]}

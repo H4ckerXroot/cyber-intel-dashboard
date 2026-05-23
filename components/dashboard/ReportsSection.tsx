@@ -43,9 +43,9 @@ export function ReportsSection({
       id="reports-analytics"
       className={cn("scroll-mt-16 flex flex-col gap-2", className)}
     >
-      <div className="border-b border-slate-800/50 pb-1.5">
-        <h2 className="section-heading">Reports & Analytics</h2>
-        <p className="section-subheading">Operational summaries</p>
+      <div className="border-b border-slate-700/50 pb-2">
+        <h2 className="content-section-title">Reports & Analytics</h2>
+        <p className="content-section-desc">Operational summaries</p>
       </div>
 
       <div className="grid gap-2 md:grid-cols-3">

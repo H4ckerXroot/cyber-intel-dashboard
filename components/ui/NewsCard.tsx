@@ -99,12 +99,12 @@ export function NewsCard({
           </div>
         )}
 
-        <h3 className="line-clamp-2 text-[13px] font-medium leading-snug text-slate-100 group-hover:text-blue-200/90">
+        <h3 className="line-clamp-2 text-sm font-medium leading-snug text-slate-100 group-hover:text-blue-200/90">
           {article.title}
         </h3>
 
         {preview && (
-          <p className="line-clamp-2 text-[11px] leading-relaxed text-slate-500">
+          <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
             {preview}
           </p>
         )}
@@ -116,7 +116,7 @@ export function NewsCard({
               <ThreatTagBadge key={tag} tag={tag} />
             ))}
           </div>
-          <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500">
+          <div className="flex items-center justify-between gap-2 text-xs text-slate-500">
             <span className="truncate">
               {(article.iocs?.length ?? 0) > 0 && (
                 <>

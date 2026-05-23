@@ -29,14 +29,14 @@ function PriorityBlock({
   onToggleWatchlist,
 }: PriorityBlockProps) {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-baseline justify-between gap-2">
+    <div className="rounded-lg border border-slate-800/50 bg-slate-900/25 p-3">
+      <div className="mb-2.5 flex items-baseline justify-between gap-2 border-b border-slate-800/40 pb-2">
         <div>
-          <h3 className="section-heading">{title}</h3>
-          <p className="section-subheading">{description}</p>
+          <h3 className="content-block-title">{title}</h3>
+          <p className="content-block-desc">{description}</p>
         </div>
         {!loading && (
-          <span className="shrink-0 text-xs tabular-nums text-slate-500">
+          <span className="shrink-0 rounded-md bg-slate-800/60 px-2 py-0.5 text-xs tabular-nums text-slate-400">
             {articles.length}
           </span>
         )}
@@ -44,11 +44,11 @@ function PriorityBlock({
       {loading ? (
         <LoadingSkeleton count={3} />
       ) : articles.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p className="rounded-md border border-dashed border-slate-800 py-6 text-center text-sm text-slate-500">
           No articles in this category
         </p>
       ) : (
-        <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+        <div className="grid gap-2.5 sm:grid-cols-2 2xl:grid-cols-3">
           {articles.slice(0, 6).map((article) => (
             <NewsCard
               key={article.id}
@@ -94,12 +94,14 @@ export function PriorityIntel({
   return (
     <section
       id="priority-intel"
-      className={cn("scroll-mt-16 flex flex-col gap-3", className)}
+      className={cn("scroll-mt-20 flex flex-col gap-3", className)}
       aria-label="Priority intelligence"
     >
-      <div className="border-b border-slate-800/50 pb-1.5">
-        <h2 className="section-heading">Priority Intelligence</h2>
-        <p className="section-subheading">Latest news, CVEs, and ransomware</p>
+      <div className="border-b border-slate-700/50 pb-2">
+        <h2 className="content-section-title">Priority Intelligence</h2>
+        <p className="content-section-desc">
+          Latest news, CVEs, and ransomware — live monitoring queue
+        </p>
       </div>
 
       <div id="latest-threat-news" className="scroll-mt-20">

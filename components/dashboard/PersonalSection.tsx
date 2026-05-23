@@ -47,10 +47,10 @@ export function PersonalSection({
           {icon}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 id={`${id}-heading`} className="section-heading">
+          <h2 id={`${id}-heading`} className="content-block-title">
             {title}
           </h2>
-          <p className="section-subheading">{description}</p>
+          <p className="content-block-desc">{description}</p>
         </div>
         <span className="shrink-0 text-xs tabular-nums text-slate-500">
           {articles.length}

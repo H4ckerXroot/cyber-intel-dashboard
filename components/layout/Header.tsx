@@ -1,9 +1,13 @@
 "use client";
 
-import { BRAND } from "@/lib/brand";
+import { NotificationCenter } from "@/components/layout/NotificationCenter";
+import { UserProfileMenu } from "@/components/layout/UserProfileMenu";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { LiveBadge } from "@/components/ui/LiveBadge";
 import { RefreshButton } from "@/components/ui/RefreshButton";
 import { SearchBar } from "@/components/ui/SearchBar";
+import { BRAND } from "@/lib/brand";
+import type { ThreatArticle, ThreatSeverity } from "@/lib/types";
 import { formatRelativeTime } from "@/lib/utils";
 
 interface HeaderProps {
@@ -16,6 +20,8 @@ interface HeaderProps {
   fetchedAt?: string;
   feedSuccess?: number;
   feedTotal?: number;
+  severityCounts: Record<ThreatSeverity, number>;
+  allArticles: ThreatArticle[];
   onMenuToggle: () => void;
 }
 
@@ -29,6 +35,8 @@ export function Header({
   fetchedAt,
   feedSuccess,
   feedTotal,
+  severityCounts,
+  allArticles,
   onMenuToggle,
 }: HeaderProps) {
   const syncLabel = refreshing
@@ -40,40 +48,55 @@ export function Header({
         : "—";
 
   return (
-    <header className="glass-panel sticky top-0 z-30 shrink-0 border-b border-slate-800/80">
-      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-3 py-2 sm:px-4 lg:px-5">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onMenuToggle}
-            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-800/60 lg:hidden"
-            aria-label="Open menu"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+    <header className="topbar sticky top-0 z-40 shrink-0 border-b border-slate-800/80">
+      <div className="flex h-14 items-center gap-3 px-3 sm:px-4 lg:px-5">
+        <button
+          type="button"
+          onClick={onMenuToggle}
+          className="rounded-md p-2 text-slate-400 transition-colors hover:bg-slate-800/60 lg:hidden"
+          aria-label="Open menu"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
 
-          <div className="hidden min-w-0 sm:block lg:hidden">
-            <p className="truncate text-[13px] font-semibold text-slate-100">{BRAND.name}</p>
+        <div className="flex shrink-0 items-center gap-2.5">
+          <BrandLogo size="sm" />
+          <div className="hidden min-w-0 sm:block">
+            <p className="text-sm font-semibold leading-none text-slate-100">
+              {BRAND.name}
+            </p>
+            <p className="mt-0.5 hidden text-[11px] text-slate-500 lg:block">
+              {BRAND.tagline}
+            </p>
+          </div>
+        </div>
+
+        <div className="min-w-0 flex-1 px-1 sm:max-w-xl sm:px-2 lg:max-w-2xl">
+          <SearchBar value={search} onChange={onSearchChange} />
+        </div>
+
+        <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
+          <div className="hidden text-right xl:block">
+            <p className="text-[11px] text-slate-500">Sync · {syncLabel}</p>
+            {feedSuccess != null && feedTotal && !loading && !refreshing && (
+              <p className="text-[11px] tabular-nums text-slate-600">
+                {feedSuccess}/{feedTotal} feeds · {articleCount} signals
+              </p>
+            )}
           </div>
 
-          <div className="min-w-0 flex-1">
-            <SearchBar value={search} onChange={onSearchChange} />
-          </div>
+          <LiveBadge size="sm" className="hidden sm:inline-flex" />
+          <RefreshButton onClick={onRefresh} loading={refreshing || loading} />
 
-          <div className="flex shrink-0 items-center gap-2">
-            <div className="hidden text-right sm:block">
-              <p className="text-[10px] text-slate-500">Sync · {syncLabel}</p>
-              {feedSuccess != null && feedTotal && !loading && !refreshing && (
-                <p className="text-[10px] tabular-nums text-slate-600">
-                  {feedSuccess}/{feedTotal} feeds · {articleCount} signals
-                </p>
-              )}
-            </div>
-            <LiveBadge size="sm" className="hidden md:inline-flex" />
-            <RefreshButton onClick={onRefresh} loading={refreshing || loading} />
-          </div>
+          <div className="mx-0.5 hidden h-6 w-px bg-slate-800 sm:block" aria-hidden />
+
+          <NotificationCenter
+            severityCounts={severityCounts}
+            articles={allArticles}
+          />
+          <UserProfileMenu />
         </div>
       </div>
     </header>

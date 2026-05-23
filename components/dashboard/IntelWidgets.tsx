@@ -44,9 +44,9 @@ export function IntelWidgets({
       className={cn("scroll-mt-16 flex flex-col gap-2", className)}
       aria-label="Operations analytics"
     >
-      <div className="border-b border-slate-800/50 pb-1.5">
-        <h2 className="section-heading">Operations Analytics</h2>
-        <p className="section-subheading">Threat activity and global exposure</p>
+      <div className="border-b border-slate-700/50 pb-2">
+        <h2 className="content-section-title">Operations Analytics</h2>
+        <p className="content-section-desc">Threat activity and global exposure</p>
       </div>
 
       <div className="grid gap-2 lg:grid-cols-12">

@@ -36,7 +36,7 @@ export function SearchBar({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="glass-input w-full rounded-md py-2 pl-9 pr-8 text-[13px] text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-600/40"
+        className="glass-input w-full rounded-md py-2 pl-9 pr-8 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-600/40"
         aria-label="Search threat intelligence"
       />
       {value && (

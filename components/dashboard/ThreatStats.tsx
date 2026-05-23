@@ -81,12 +81,12 @@ export function ThreatStats({
             card.accent
           )}
         >
-          <p className="truncate text-[9px] font-medium uppercase tracking-[0.06em] text-slate-500">
+          <p className="truncate text-[10px] font-medium uppercase tracking-[0.06em] text-slate-500">
             {card.label}
           </p>
           <p
             className={cn(
-              "mt-0.5 text-base font-semibold tabular-nums leading-none",
+              "mt-0.5 text-lg font-semibold tabular-nums leading-none",
               card.color
             )}
           >

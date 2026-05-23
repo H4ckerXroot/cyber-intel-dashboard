@@ -31,50 +31,113 @@ export function Sidebar({
         />
       )}
 
+      {/* Mobile drawer */}
       <aside
         className={cn(
-          "glass-panel fixed left-0 top-0 z-50 flex h-full w-[13.5rem] flex-col border-r border-slate-800/90 transition-transform duration-200 lg:static lg:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          "glass-panel fixed left-0 top-0 z-50 flex h-full w-56 flex-col border-r border-slate-800/90 transition-transform duration-200 lg:hidden",
+          isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="border-b border-slate-800/80 px-3 py-3">
-          <div className="flex items-center gap-2.5">
-            <BrandLogo size="sm" />
-            <div className="min-w-0">
-              <p className="truncate text-[13px] font-semibold text-slate-100">
-                {BRAND.name}
-              </p>
-              <p className="text-[9px] font-medium uppercase tracking-[0.14em] text-slate-500">
-                {BRAND.tagline}
-              </p>
-            </div>
-          </div>
-        </div>
+        <SidebarContent
+          mainNav={mainNav}
+          personalNav={personalNav}
+          activeSection={activeSection}
+          onNavigate={onNavigate}
+          onClose={onClose}
+          expanded
+        />
+      </aside>
 
-        <nav className="flex-1 overflow-y-auto px-1.5 py-2.5" aria-label="Dashboard sections">
-          <NavGroup
-            label="Operations"
-            items={mainNav}
-            activeSection={activeSection}
-            onNavigate={onNavigate}
-            onClose={onClose}
-          />
-          <NavGroup
-            label="Personal"
-            items={personalNav}
-            activeSection={activeSection}
-            onNavigate={onNavigate}
-            onClose={onClose}
-            className="mt-4"
-          />
-        </nav>
+      {/* Desktop: sticky, collapsed → expand on hover */}
+      <aside
+        className={cn(
+          "group/sidebar glass-panel hidden h-screen w-14 shrink-0 flex-col overflow-hidden",
+          "border-r border-slate-800/90 transition-[width] duration-200 ease-out",
+          "hover:w-56 lg:sticky lg:top-0 lg:flex"
+        )}
+      >
+        <SidebarContent
+          mainNav={mainNav}
+          personalNav={personalNav}
+          activeSection={activeSection}
+          onNavigate={onNavigate}
+          onClose={onClose}
+          expanded={false}
+        />
+      </aside>
+    </>
+  );
+}
 
-        <div className="border-t border-slate-800/80 px-3 py-2.5">
-          <p className="text-[9px] leading-relaxed text-slate-600">
-            {BRAND.feedCount} sources · {BRAND.maxArticleAgeHours}h window
+function SidebarContent({
+  mainNav,
+  personalNav,
+  activeSection,
+  onNavigate,
+  onClose,
+  expanded,
+}: {
+  mainNav: typeof NAV_ITEMS;
+  personalNav: typeof NAV_ITEMS;
+  activeSection: string;
+  onNavigate: (id: string) => void;
+  onClose: () => void;
+  expanded: boolean;
+}) {
+  return (
+    <>
+      <div className="flex h-14 shrink-0 items-center border-b border-slate-800/80 px-3">
+        <BrandLogo size="sm" />
+        <div
+          className={cn(
+            "ml-2.5 min-w-0 overflow-hidden transition-opacity duration-200",
+            expanded
+              ? "opacity-100"
+              : "w-0 opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:opacity-100"
+          )}
+        >
+          <p className="truncate text-sm font-semibold text-slate-100">{BRAND.name}</p>
+          <p className="text-[10px] uppercase tracking-wider text-slate-500">
+            {BRAND.tagline}
           </p>
         </div>
-      </aside>
+      </div>
+
+      <nav
+        className="flex-1 overflow-y-auto overflow-x-hidden px-1.5 py-2"
+        aria-label="Dashboard sections"
+      >
+        <NavGroup
+          label="Operations"
+          items={mainNav}
+          activeSection={activeSection}
+          onNavigate={onNavigate}
+          onClose={onClose}
+          expanded={expanded}
+        />
+        <NavGroup
+          label="Personal"
+          items={personalNav}
+          activeSection={activeSection}
+          onNavigate={onNavigate}
+          onClose={onClose}
+          expanded={expanded}
+          className="mt-4"
+        />
+      </nav>
+
+      <div className="shrink-0 border-t border-slate-800/80 px-3 py-2.5">
+        <p
+          className={cn(
+            "overflow-hidden text-[10px] leading-relaxed text-slate-600 transition-opacity duration-200",
+            expanded
+              ? "opacity-100"
+              : "h-0 opacity-0 group-hover/sidebar:h-auto group-hover/sidebar:opacity-100"
+          )}
+        >
+          {BRAND.feedCount} sources · {BRAND.maxArticleAgeHours}h
+        </p>
+      </div>
     </>
   );
 }
@@ -85,6 +148,7 @@ function NavGroup({
   activeSection,
   onNavigate,
   onClose,
+  expanded,
   className,
 }: {
   label: string;
@@ -92,26 +156,36 @@ function NavGroup({
   activeSection: string;
   onNavigate: (id: string) => void;
   onClose: () => void;
+  expanded: boolean;
   className?: string;
 }) {
   return (
     <div className={className}>
-      <p className="mb-1 px-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-slate-600">
+      <p
+        className={cn(
+          "mb-1 overflow-hidden px-2 text-[10px] font-semibold uppercase tracking-wider text-slate-600 transition-opacity duration-200",
+          expanded
+            ? "opacity-100"
+            : "h-0 opacity-0 group-hover/sidebar:h-auto group-hover/sidebar:opacity-100"
+        )}
+      >
         {label}
       </p>
-      <ul className="space-y-px">
+      <ul className="space-y-0.5">
         {items.map((item) => {
           const active = activeSection === item.id;
           return (
             <li key={item.id}>
               <button
                 type="button"
+                title={item.label}
                 onClick={() => {
                   onNavigate(item.id);
                   onClose();
                 }}
                 className={cn(
-                  "relative flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px] transition-colors",
+                  "relative flex w-full items-center gap-2.5 rounded-md py-2 text-left text-sm transition-colors",
+                  expanded ? "px-2" : "justify-center px-0 group-hover/sidebar:justify-start group-hover/sidebar:px-2",
                   active
                     ? "bg-blue-600/12 text-blue-100"
                     : "text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
@@ -123,10 +197,19 @@ function NavGroup({
                     aria-hidden
                   />
                 )}
-                <span className="w-4 shrink-0 text-center text-xs opacity-60" aria-hidden>
+                <span className="w-5 shrink-0 text-center text-sm opacity-80" aria-hidden>
                   {item.icon}
                 </span>
-                <span className="truncate">{item.label}</span>
+                <span
+                  className={cn(
+                    "truncate transition-opacity duration-200",
+                    expanded
+                      ? "opacity-100"
+                      : "w-0 overflow-hidden opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:opacity-100"
+                  )}
+                >
+                  {item.label}
+                </span>
               </button>
             </li>
           );

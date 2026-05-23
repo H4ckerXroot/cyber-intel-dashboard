@@ -35,7 +35,7 @@ export function SeverityFilter({
           type="button"
           onClick={() => onChange(sev)}
           className={cn(
-            "rounded-md border px-2.5 py-1 text-[11px] font-medium transition-colors",
+            "rounded-md border px-2 py-0.5 text-xs font-medium transition-colors",
             active === sev
               ? "border-blue-600/50 bg-blue-600/12 text-blue-200"
               : "border-slate-700/50 bg-transparent text-slate-500 hover:border-slate-600 hover:text-slate-300"
