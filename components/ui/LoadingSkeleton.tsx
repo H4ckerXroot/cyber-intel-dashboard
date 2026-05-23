@@ -23,7 +23,7 @@ export function NewsCardSkeleton() {
 
 export function LoadingSkeleton({ count = 6, className }: LoadingSkeletonProps) {
   return (
-    <div className={cn("grid gap-2 sm:grid-cols-2 xl:grid-cols-3", className)}>
+    <div className={cn("grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4", className)}>
       {Array.from({ length: count }).map((_, i) => (
         <NewsCardSkeleton key={i} />
       ))}

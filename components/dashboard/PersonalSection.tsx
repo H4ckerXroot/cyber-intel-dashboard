@@ -64,7 +64,7 @@ export function PersonalSection({
           <p className="text-sm text-slate-500">{emptyMessage}</p>
         </div>
       ) : (
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {articles.map((article) => (
             <NewsCard
               key={article.id}

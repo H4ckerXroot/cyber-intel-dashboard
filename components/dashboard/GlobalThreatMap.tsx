@@ -70,7 +70,7 @@ export function GlobalThreatMap({
         </span>
       </div>
 
-      <div className="relative flex-1 min-h-[10.5rem] overflow-hidden rounded-md border border-slate-800/60 bg-[#050b14]">
+      <div className="relative min-h-[12.5rem] flex-1 overflow-hidden rounded-md border border-slate-800/60 bg-[#050b14]">
         <svg
           viewBox="0 0 720 260"
           className="h-full w-full"

@@ -2,11 +2,9 @@
 
 import { NotificationCenter } from "@/components/layout/NotificationCenter";
 import { UserProfileMenu } from "@/components/layout/UserProfileMenu";
-import { BrandLogo } from "@/components/ui/BrandLogo";
 import { LiveBadge } from "@/components/ui/LiveBadge";
 import { RefreshButton } from "@/components/ui/RefreshButton";
 import { SearchBar } from "@/components/ui/SearchBar";
-import { BRAND } from "@/lib/brand";
 import type { ThreatArticle, ThreatSeverity } from "@/lib/types";
 import { formatRelativeTime } from "@/lib/utils";
 
@@ -49,11 +47,11 @@ export function Header({
 
   return (
     <header className="topbar sticky top-0 z-40 shrink-0 border-b border-slate-800/80">
-      <div className="flex h-14 items-center gap-3 px-3 sm:px-4 lg:px-5">
+      <div className="flex h-14 items-center gap-2 px-3 sm:gap-3 sm:px-4">
         <button
           type="button"
           onClick={onMenuToggle}
-          className="rounded-md p-2 text-slate-400 transition-colors hover:bg-slate-800/60 lg:hidden"
+          className="shrink-0 rounded-md p-2 text-slate-400 transition-colors hover:bg-slate-800/60 lg:hidden"
           aria-label="Open menu"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -61,24 +59,12 @@ export function Header({
           </svg>
         </button>
 
-        <div className="flex shrink-0 items-center gap-2.5">
-          <BrandLogo size="sm" />
-          <div className="hidden min-w-0 sm:block">
-            <p className="text-sm font-semibold leading-none text-slate-100">
-              {BRAND.name}
-            </p>
-            <p className="mt-0.5 hidden text-[11px] text-slate-500 lg:block">
-              {BRAND.tagline}
-            </p>
-          </div>
-        </div>
-
-        <div className="min-w-0 flex-1 px-1 sm:max-w-xl sm:px-2 lg:max-w-2xl">
+        <div className="min-w-0 flex-1">
           <SearchBar value={search} onChange={onSearchChange} />
         </div>
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
-          <div className="hidden text-right xl:block">
+          <div className="hidden text-right lg:block">
             <p className="text-[11px] text-slate-500">Sync · {syncLabel}</p>
             {feedSuccess != null && feedTotal && !loading && !refreshing && (
               <p className="text-[11px] tabular-nums text-slate-600">
@@ -90,7 +76,7 @@ export function Header({
           <LiveBadge size="sm" className="hidden sm:inline-flex" />
           <RefreshButton onClick={onRefresh} loading={refreshing || loading} />
 
-          <div className="mx-0.5 hidden h-6 w-px bg-slate-800 sm:block" aria-hidden />
+          <div className="mx-0.5 hidden h-6 w-px bg-slate-800 md:block" aria-hidden />
 
           <NotificationCenter
             severityCounts={severityCounts}

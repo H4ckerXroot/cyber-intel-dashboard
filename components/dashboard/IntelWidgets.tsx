@@ -41,7 +41,7 @@ export function IntelWidgets({
   return (
     <section
       id="ops-analytics"
-      className={cn("scroll-mt-16 flex flex-col gap-2", className)}
+      className={cn("scroll-mt-16 flex flex-col gap-2.5", className)}
       aria-label="Operations analytics"
     >
       <div className="border-b border-slate-700/50 pb-2">
@@ -49,25 +49,25 @@ export function IntelWidgets({
         <p className="content-section-desc">Threat activity and global exposure</p>
       </div>
 
-      <div className="grid gap-2 lg:grid-cols-12">
-        <div className="soc-card flex flex-col px-3 py-2.5 lg:col-span-8">
-          <div className="mb-2 flex items-baseline justify-between gap-2">
+      <div className="grid gap-2.5 lg:grid-cols-12 lg:items-stretch">
+        <div className="soc-card flex min-h-[15.5rem] flex-col px-3.5 py-3 lg:col-span-9">
+          <div className="mb-2.5 flex items-baseline justify-between gap-2">
             <div>
               <h3 className="section-heading">Threat Activity</h3>
               <p className="section-subheading">7-day signal volume trend</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] text-slate-500">Peak</p>
-              <p className="text-sm font-semibold tabular-nums text-blue-400/90">
+              <p className="text-[11px] text-slate-500">Peak volume</p>
+              <p className="text-base font-semibold tabular-nums text-blue-400/90">
                 {peak.value}
               </p>
             </div>
           </div>
 
-          <div className="relative flex-1 min-h-[11rem]">
+          <div className="relative min-h-[13rem] flex-1">
             <svg
               viewBox="0 0 400 140"
-              className="h-full w-full"
+              className="h-full min-h-[13rem] w-full"
               preserveAspectRatio="none"
               aria-hidden
             >
@@ -82,7 +82,6 @@ export function IntelWidgets({
                 </linearGradient>
               </defs>
 
-              {/* Grid */}
               {[0, 1, 2, 3, 4].map((i) => (
                 <line
                   key={i}
@@ -123,7 +122,7 @@ export function IntelWidgets({
                           key={d.label}
                           cx={x}
                           cy={y}
-                          r="3"
+                          r="3.5"
                           fill="#3b82f6"
                           stroke="#0f172a"
                           strokeWidth="1.5"
@@ -135,23 +134,26 @@ export function IntelWidgets({
               })()}
             </svg>
 
-            <div className="absolute bottom-0 left-0 right-0 flex justify-between px-1 text-[9px] text-slate-600">
+            <div className="absolute bottom-0 left-0 right-0 flex justify-between px-0.5 text-[10px] text-slate-600">
               {activity.map((d) => (
                 <span key={d.label}>{d.label}</span>
               ))}
             </div>
           </div>
 
-          <div className="mt-2 flex gap-4 border-t border-slate-800/50 pt-2 text-[10px]">
+          <div className="mt-2.5 flex flex-wrap gap-x-5 gap-y-1 border-t border-slate-800/50 pt-2.5 text-xs">
             <Stat label="Critical" value={counts.critical} className="text-red-400" />
             <Stat label="High" value={counts.high} className="text-orange-400" />
             <Stat label="Medium" value={counts.medium} className="text-amber-400" />
-            <Stat label="Total" value={totalArticles} className="text-slate-400" />
+            <Stat label="Total signals" value={totalArticles} className="text-slate-400" />
           </div>
         </div>
 
-        <div className="lg:col-span-4">
-          <GlobalThreatMap severityCounts={severityCounts} className="min-h-[13.5rem]" />
+        <div className="flex min-h-[15.5rem] lg:col-span-3">
+          <GlobalThreatMap
+            severityCounts={severityCounts}
+            className="h-full w-full"
+          />
         </div>
       </div>
     </section>

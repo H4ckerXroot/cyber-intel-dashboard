@@ -48,7 +48,7 @@ function PriorityBlock({
           No articles in this category
         </p>
       ) : (
-        <div className="grid gap-2.5 sm:grid-cols-2 2xl:grid-cols-3">
+        <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3">
           {articles.slice(0, 6).map((article) => (
             <NewsCard
               key={article.id}

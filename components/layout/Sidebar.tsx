@@ -34,7 +34,7 @@ export function Sidebar({
       {/* Mobile drawer */}
       <aside
         className={cn(
-          "glass-panel fixed left-0 top-0 z-50 flex h-full w-56 flex-col border-r border-slate-800/90 transition-transform duration-200 lg:hidden",
+          "glass-panel fixed left-0 top-0 z-50 flex h-full w-[13rem] flex-col border-r border-slate-800/90 transition-transform duration-200 lg:hidden",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -51,9 +51,9 @@ export function Sidebar({
       {/* Desktop: sticky, collapsed → expand on hover */}
       <aside
         className={cn(
-          "group/sidebar glass-panel hidden h-screen w-14 shrink-0 flex-col overflow-hidden",
+          "group/sidebar glass-panel hidden h-screen w-12 shrink-0 flex-col overflow-hidden",
           "border-r border-slate-800/90 transition-[width] duration-200 ease-out",
-          "hover:w-56 lg:sticky lg:top-0 lg:flex"
+          "hover:w-[13rem] lg:sticky lg:top-0 lg:flex"
         )}
       >
         <SidebarContent

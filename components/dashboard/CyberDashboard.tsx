@@ -122,8 +122,8 @@ export function CyberDashboard() {
           onMenuToggle={() => setSidebarOpen(true)}
         />
 
-        <main className="min-h-0 flex-1 overflow-y-auto px-3 py-3 sm:px-4 lg:px-5">
-          <div className="mx-auto flex w-full max-w-7xl flex-col gap-3">
+        <main className="workspace-main min-h-0 flex-1 overflow-y-auto">
+          <div className="workspace-content flex w-full flex-col gap-2.5">
             {error && (
               <div
                 className="rounded-lg border border-red-500/25 bg-red-500/5 px-3 py-2 text-sm text-red-300"
@@ -158,9 +158,9 @@ export function CyberDashboard() {
             {/* TOP: Hero + right-side ops panels */}
             <section
               id="overview"
-              className="scroll-mt-16 grid gap-2 lg:grid-cols-12 lg:items-stretch"
+              className="scroll-mt-16 grid gap-2.5 lg:grid-cols-12 lg:items-stretch"
             >
-              <div className="lg:col-span-8">
+              <div className="lg:col-span-9">
                 <WelcomeSection
                   fetchedAt={fetchedAt}
                   loading={loading}
@@ -168,7 +168,7 @@ export function CyberDashboard() {
                   articleCount={allArticles.length}
                 />
               </div>
-              <div className="flex flex-col gap-2 lg:col-span-4">
+              <div className="flex flex-col gap-2.5 lg:col-span-3">
                 <ThreatLevelWidget severityCounts={severityCounts} />
                 <AnalystProfile />
               </div>
@@ -226,7 +226,7 @@ export function CyberDashboard() {
                     </p>
                   </div>
                 ) : (
-                  <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                     {articles.slice(0, 24).map((article) => (
                       <NewsCard
                         key={article.id}
@@ -311,8 +311,8 @@ export function CyberDashboard() {
           </div>
         </main>
 
-        <footer className="shrink-0 border-t border-slate-800/80 px-3 py-2 sm:px-4">
-          <div className="mx-auto flex max-w-7xl flex-col items-center gap-0.5 text-center sm:flex-row sm:justify-between sm:text-left">
+        <footer className="workspace-footer shrink-0 border-t border-slate-800/80">
+          <div className="flex flex-col items-center gap-0.5 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="text-[11px] text-slate-600">{BRAND.footer}</p>
             <p className="text-[11px] text-slate-500">{BRAND.footerPersonal}</p>
           </div>
